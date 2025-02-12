@@ -15,7 +15,6 @@ import (
 	"io/fs"
 	"log"
 	"os"
-	"path"
 	"path/filepath"
 	"regexp"
 	"slices"
@@ -139,16 +138,16 @@ func ReadV2ModuleNameToGetNamespace(path string) (map[string][]PackageInfo, erro
 // remove all sdk generated files in given path
 func CleanSDKGeneratedFiles(path string) error {
 	log.Printf("Removing all sdk generated files in '%s'...", path)
-	return filepath.Walk(path, func(path string, info fs.FileInfo, err error) error {
+	return filepath.WalkDir(path, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
 
-		if info.IsDir() {
+		if d.IsDir() {
 			return nil
 		}
 
-		if strings.HasSuffix(info.Name(), ".go") {
+		if filepath.Ext(d.Name()) == ".go" {
 			b, err := os.ReadFile(path)
 			if err != nil {
 				return err
@@ -232,7 +231,7 @@ func RemoveTagSet(path string) error {
 
 // get swagger rp folder name from autorest.md file
 func GetSpecRpName(packageRootPath string) (string, error) {
-	b, err := os.ReadFile(path.Join(packageRootPath, "autorest.md"))
+	b, err := os.ReadFile(filepath.Join(packageRootPath, "autorest.md"))
 	if err != nil {
 		return "", err
 	}
@@ -416,7 +415,7 @@ func ReplaceNewClientNamePlaceholder(packageRootPath string, exports exports.Con
 	return os.WriteFile(path, []byte(content), 0644)
 }
 
-func UpdateModuleDefinition(packageRootPath, rpName, namespaceName string, version *semver.Version) error {
+func UpdateModuleDefinition(packageRootPath, packageModuleRelativePath string, version *semver.Version) error {
 	if version.Major() > 1 {
 		path := filepath.Join(packageRootPath, "go.mod")
 
@@ -431,7 +430,7 @@ func UpdateModuleDefinition(packageRootPath, rpName, namespaceName string, versi
 				line = strings.TrimRight(line, "\r")
 				parts := strings.Split(line, "/")
 				if parts[len(parts)-1] != fmt.Sprintf("v%d", version.Major()) {
-					lines[i] = fmt.Sprintf("module github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/%s/%s/v%d", rpName, namespaceName, version.Major())
+					lines[i] = fmt.Sprintf("module github.com/Azure/azure-sdk-for-go/%s/v%d", packageModuleRelativePath, version.Major())
 				}
 				break
 			}
@@ -553,16 +552,16 @@ func replaceModuleImport(path, rpName, namespaceName, previousVersion, currentVe
 		return nil
 	}
 
-	return filepath.Walk(filepath.Join(path, subPath), func(path string, info fs.FileInfo, err error) error {
+	return filepath.WalkDir(filepath.Join(path, subPath), func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
-		if info.IsDir() {
+		if d.IsDir() {
 			return nil
 		}
 		suffix := false
 		for i := 0; i < len(suffixes) && !suffix; i++ {
-			suffix = strings.HasSuffix(info.Name(), suffixes[i])
+			suffix = strings.HasSuffix(d.Name(), suffixes[i])
 		}
 
 		if suffix {
@@ -621,13 +620,13 @@ func existSuffixFile(path, suffix string) bool {
 	return existed
 }
 
-func replaceReadmeModule(path, rpName, namespaceName, currentVersion string) error {
+func replaceReadmeModule(path, packageModuleRelativePath, currentVersion string) error {
 	readmeFile, err := os.ReadFile(filepath.Join(path, "README.md"))
 	if err != nil {
 		return err
 	}
 
-	module := fmt.Sprintf("github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/%s/%s", rpName, namespaceName)
+	module := fmt.Sprintf("github.com/Azure/azure-sdk-for-go/%s", packageModuleRelativePath)
 
 	readmeModule := module
 	match := regexp.MustCompile(fmt.Sprintf(`%s/v\d+`, module))
@@ -705,16 +704,16 @@ func ReplaceConstModuleVersion(packagePath string, newVersion string) error {
 }
 
 func ReplaceModule(newVersion *semver.Version, packagePath, baseModule string, suffixs ...string) error {
-	return filepath.Walk(packagePath, func(path string, info fs.FileInfo, err error) error {
+	return filepath.WalkDir(packagePath, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
 
-		if info.IsDir() {
+		if d.IsDir() {
 			return nil
 		}
 
-		hasSuffix := slices.ContainsFunc(suffixs, func(s string) bool { return strings.HasSuffix(info.Name(), s) })
+		hasSuffix := slices.ContainsFunc(suffixs, func(s string) bool { return strings.HasSuffix(d.Name(), s) })
 		if len(suffixs) == 0 || hasSuffix {
 			if err = ReplaceImport(path, baseModule, newVersion.Major()); err != nil {
 				return err

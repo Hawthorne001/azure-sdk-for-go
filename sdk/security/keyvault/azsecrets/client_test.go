@@ -1,6 +1,3 @@
-//go:build go1.18
-// +build go1.18
-
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
@@ -9,10 +6,12 @@ package azsecrets_test
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"strings"
 	"testing"
 	"time"
 
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/to"
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/mock"
@@ -381,4 +380,32 @@ func TestRecover(t *testing.T) {
 	require.Equal(t, setResp.Attributes, getResp.Attributes)
 	require.Equal(t, setResp.ID, getResp.ID)
 	require.Equal(t, setResp.ContentType, getResp.ContentType)
+}
+
+func TestAPIVersion(t *testing.T) {
+	apiVersion := "7.3"
+	var requireVersion = func(req *http.Request) bool {
+		version := req.URL.Query().Get("api-version")
+		require.Equal(t, version, apiVersion)
+		return true
+	}
+	srv, close := mock.NewServer(mock.WithTransformAllRequestsToTestServerUrl())
+	defer close()
+	srv.AppendResponse(
+		mock.WithStatusCode(200),
+		mock.WithPredicate(requireVersion),
+	)
+	srv.AppendResponse(mock.WithStatusCode(http.StatusInternalServerError))
+
+	opts := &azsecrets.ClientOptions{
+		ClientOptions: azcore.ClientOptions{
+			Transport:  srv,
+			APIVersion: apiVersion,
+		},
+	}
+	client, err := azsecrets.NewClient(vaultURL, &azcred.Fake{}, opts)
+	require.NoError(t, err)
+
+	_, err = client.GetSecret(context.Background(), "name", "", nil)
+	require.NoError(t, err)
 }

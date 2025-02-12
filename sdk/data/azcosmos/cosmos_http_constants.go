@@ -36,6 +36,7 @@ const (
 	cosmosHeaderIsBatchAtomic                      string = "x-ms-cosmos-batch-atomic"
 	cosmosHeaderIsBatchOrdered                     string = "x-ms-cosmos-batch-ordered"
 	cosmosHeaderSDKSupportedCapabilities           string = "x-ms-cosmos-sdk-supportedcapabilities"
+	cosmosHeaderEnableCrossPartitionQuery          string = "x-ms-documentdb-query-enablecrosspartition"
 	headerXmsDate                                  string = "x-ms-date"
 	headerAuthorization                            string = "Authorization"
 	headerContentType                              string = "Content-Type"
@@ -78,6 +79,7 @@ const (
 	cosmosHeaderIsPartitionKeyDeletePending        string = "x-ms-cosmos-is-partition-key-delete-pending"
 	cosmosHeaderQueryExecutionInfo                 string = "x-ms-cosmos-query-execution-info"
 	headerXmsItemCount                             string = "x-ms-item-count"
+	headerDedicatedGatewayMaxAge                   string = "x-ms-dedicatedgateway-max-age"
 )
 
 const (

@@ -11,8 +11,8 @@ package azopenai
 // AzureChatExtensionConfigurationClassification provides polymorphic access to related types.
 // Call the interface's GetAzureChatExtensionConfiguration() method to access the common type.
 // Use a type switch to determine the concrete type.  The possible types are:
-// - *AzureChatExtensionConfiguration, *AzureCosmosDBChatExtensionConfiguration, *AzureMachineLearningIndexChatExtensionConfiguration,
-// - *AzureSearchChatExtensionConfiguration, *ElasticsearchChatExtensionConfiguration, *PineconeChatExtensionConfiguration
+// - *AzureChatExtensionConfiguration, *AzureCosmosDBChatExtensionConfiguration, *AzureSearchChatExtensionConfiguration, *ElasticsearchChatExtensionConfiguration,
+// - *MongoDBChatExtensionConfiguration, *PineconeChatExtensionConfiguration
 type AzureChatExtensionConfigurationClassification interface {
 	// GetAzureChatExtensionConfiguration returns the AzureChatExtensionConfiguration content of the underlying type.
 	GetAzureChatExtensionConfiguration() *AzureChatExtensionConfiguration
@@ -39,7 +39,7 @@ type ChatCompletionsNamedToolSelectionClassification interface {
 // ChatCompletionsResponseFormatClassification provides polymorphic access to related types.
 // Call the interface's GetChatCompletionsResponseFormat() method to access the common type.
 // Use a type switch to determine the concrete type.  The possible types are:
-// - *ChatCompletionsJSONResponseFormat, *ChatCompletionsResponseFormat, *ChatCompletionsTextResponseFormat
+// - *ChatCompletionsJSONResponseFormat, *ChatCompletionsJSONSchemaResponseFormat, *ChatCompletionsResponseFormat, *ChatCompletionsTextResponseFormat
 type ChatCompletionsResponseFormatClassification interface {
 	// GetChatCompletionsResponseFormat returns the ChatCompletionsResponseFormat content of the underlying type.
 	GetChatCompletionsResponseFormat() *ChatCompletionsResponseFormat
@@ -75,7 +75,8 @@ type ChatFinishDetailsClassification interface {
 // ChatMessageContentItemClassification provides polymorphic access to related types.
 // Call the interface's GetChatMessageContentItem() method to access the common type.
 // Use a type switch to determine the concrete type.  The possible types are:
-// - *ChatMessageContentItem, *ChatMessageImageContentItem, *ChatMessageTextContentItem
+// - *ChatMessageAudioContentItem, *ChatMessageContentItem, *ChatMessageImageContentItem, *ChatMessageRefusalContentItem,
+// - *ChatMessageTextContentItem
 type ChatMessageContentItemClassification interface {
 	// GetChatMessageContentItem returns the ChatMessageContentItem content of the underlying type.
 	GetChatMessageContentItem() *ChatMessageContentItem
@@ -84,8 +85,8 @@ type ChatMessageContentItemClassification interface {
 // ChatRequestMessageClassification provides polymorphic access to related types.
 // Call the interface's GetChatRequestMessage() method to access the common type.
 // Use a type switch to determine the concrete type.  The possible types are:
-// - *ChatRequestAssistantMessage, *ChatRequestFunctionMessage, *ChatRequestMessage, *ChatRequestSystemMessage, *ChatRequestToolMessage,
-// - *ChatRequestUserMessage
+// - *ChatRequestAssistantMessage, *ChatRequestDeveloperMessage, *ChatRequestFunctionMessage, *ChatRequestMessage, *ChatRequestSystemMessage,
+// - *ChatRequestToolMessage, *ChatRequestUserMessage
 type ChatRequestMessageClassification interface {
 	// GetChatRequestMessage returns the ChatRequestMessage content of the underlying type.
 	GetChatRequestMessage() *ChatRequestMessage
@@ -96,7 +97,8 @@ type ChatRequestMessageClassification interface {
 // Use a type switch to determine the concrete type.  The possible types are:
 // - *OnYourDataAPIKeyAuthenticationOptions, *OnYourDataAccessTokenAuthenticationOptions, *OnYourDataAuthenticationOptions,
 // - *OnYourDataConnectionStringAuthenticationOptions, *OnYourDataEncodedAPIKeyAuthenticationOptions, *OnYourDataKeyAndKeyIDAuthenticationOptions,
-// - *OnYourDataSystemAssignedManagedIdentityAuthenticationOptions, *OnYourDataUserAssignedManagedIdentityAuthenticationOptions
+// - *OnYourDataSystemAssignedManagedIdentityAuthenticationOptions, *OnYourDataUserAssignedManagedIdentityAuthenticationOptions,
+// - *OnYourDataUsernameAndPasswordAuthenticationOptions
 type OnYourDataAuthenticationOptionsClassification interface {
 	// GetOnYourDataAuthenticationOptions returns the OnYourDataAuthenticationOptions content of the underlying type.
 	GetOnYourDataAuthenticationOptions() *OnYourDataAuthenticationOptions
@@ -114,8 +116,8 @@ type OnYourDataVectorSearchAuthenticationOptionsClassification interface {
 // OnYourDataVectorizationSourceClassification provides polymorphic access to related types.
 // Call the interface's GetOnYourDataVectorizationSource() method to access the common type.
 // Use a type switch to determine the concrete type.  The possible types are:
-// - *OnYourDataDeploymentNameVectorizationSource, *OnYourDataEndpointVectorizationSource, *OnYourDataModelIDVectorizationSource,
-// - *OnYourDataVectorizationSource
+// - *OnYourDataDeploymentNameVectorizationSource, *OnYourDataEndpointVectorizationSource, *OnYourDataIntegratedVectorizationSource,
+// - *OnYourDataModelIDVectorizationSource, *OnYourDataVectorizationSource
 type OnYourDataVectorizationSourceClassification interface {
 	// GetOnYourDataVectorizationSource returns the OnYourDataVectorizationSource content of the underlying type.
 	GetOnYourDataVectorizationSource() *OnYourDataVectorizationSource

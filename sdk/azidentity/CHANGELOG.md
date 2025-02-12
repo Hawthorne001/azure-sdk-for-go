@@ -1,14 +1,39 @@
 # Release History
 
-## 1.8.0-beta.3 (Unreleased)
-
-### Features Added
-
-### Breaking Changes
-
-### Bugs Fixed
+## 1.8.2 (2025-02-12)
 
 ### Other Changes
+* Upgraded dependencies
+
+## 1.8.1 (2025-01-15)
+
+### Bugs Fixed
+* User credential types inconsistently log access token scopes
+* `DefaultAzureCredential` skips managed identity in Azure Container Instances
+* Credentials having optional tenant IDs such as `AzureCLICredential` and
+  `InteractiveBrowserCredential` require setting `AdditionallyAllowedTenants`
+  when used with some clients
+
+### Other Changes
+* `ChainedTokenCredential` and `DefaultAzureCredential` continue to their next
+  credential after `ManagedIdentityCredential` receives an unexpected response
+  from IMDS, indicating the response is from something else such as a proxy
+
+## 1.8.0 (2024-10-08)
+
+### Other Changes
+* `AzurePipelinesCredential` sets an additional OIDC request header so that it
+  receives a 401 instead of a 302 after presenting an invalid system access token
+* Allow logging of debugging headers for `AzurePipelinesCredential` and include
+  them in error messages
+
+## 1.8.0-beta.3 (2024-09-17)
+
+### Features Added
+* Added `ObjectID` type for `ManagedIdentityCredentialOptions.ID`
+
+### Other Changes
+* Removed redundant content from error messages
 
 ## 1.8.0-beta.2 (2024-08-06)
 

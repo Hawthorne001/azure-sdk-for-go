@@ -5,8 +5,10 @@ package azcosmos
 
 import (
 	"context"
+	"crypto/tls"
 	"encoding/base64"
 	"encoding/json"
+	"net/http"
 	"os"
 	"strconv"
 	"testing"
@@ -14,6 +16,7 @@ import (
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore/tracing"
 )
 
 type emulatorTests struct {
@@ -41,9 +44,21 @@ func newEmulatorTestsWithEndpoint(t *testing.T, e string) *emulatorTests {
 	}
 }
 
-func (e *emulatorTests) getClient(t *testing.T) *Client {
+func (e *emulatorTests) getClient(t *testing.T, tp tracing.Provider) *Client {
 	cred, _ := NewKeyCredential(e.key)
-	client, err := NewClientWithKey(e.host, cred, nil)
+
+	// Create a client with a custom transport that skips TLS verification
+	// Since there's a self-signed certificate in the emulator, we need to skip verification
+	transport := &http.Client{Transport: &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}}
+
+	options := &ClientOptions{ClientOptions: azcore.ClientOptions{
+		TracingProvider: tp,
+		Transport:       transport,
+	}}
+
+	client, err := NewClientWithKey(e.host, cred, options)
 	if err != nil {
 		t.Fatalf("Failed to create client: %v", err)
 	}
@@ -51,9 +66,12 @@ func (e *emulatorTests) getClient(t *testing.T) *Client {
 	return client
 }
 
-func (e *emulatorTests) getAadClient(t *testing.T) *Client {
+func (e *emulatorTests) getAadClient(t *testing.T, tp tracing.Provider) *Client {
 	cred := &emulatorTokenCredential{}
-	client, err := NewClient(e.host, cred, nil)
+	options := &ClientOptions{ClientOptions: azcore.ClientOptions{
+		TracingProvider: tp,
+	}}
+	client, err := NewClient(e.host, cred, options)
 	if err != nil {
 		t.Fatalf("Failed to create client: %v", err)
 	}
