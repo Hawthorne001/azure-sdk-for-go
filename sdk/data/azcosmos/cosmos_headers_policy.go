@@ -30,7 +30,7 @@ func (p *headerPolicies) Do(req *policy.Request) (*http.Response, error) {
 				enableContentResponseOnWrite = *o.headerOptionsOverride.enableContentResponseOnWrite
 			}
 
-			if o.headerOptionsOverride.partitionKey != nil {
+			if o.headerOptionsOverride.partitionKey != nil && len(o.headerOptionsOverride.partitionKey.values) > 0 {
 				pkAsString, err := o.headerOptionsOverride.partitionKey.toJsonString()
 				if err != nil {
 					return nil, err
@@ -43,7 +43,7 @@ func (p *headerPolicies) Do(req *policy.Request) (*http.Response, error) {
 			}
 		}
 
-		if o.isWriteOperation && !enableContentResponseOnWrite {
+		if o.isWriteOperation && o.resourceType == resourceTypeDocument && !enableContentResponseOnWrite {
 			req.Raw().Header.Add(cosmosHeaderPrefer, cosmosHeaderValuesPreferMinimal)
 		}
 	}

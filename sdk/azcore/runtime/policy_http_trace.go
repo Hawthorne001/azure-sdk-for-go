@@ -30,6 +30,8 @@ const (
 	attrAZServiceReqID = "az.service_request_id"
 
 	attrNetPeerName = "net.peer.name"
+
+	attrErrType = "error.type"
 )
 
 // newHTTPTracePolicy creates a new instance of the httpTracePolicy.
@@ -96,8 +98,12 @@ func (h *httpTracePolicy) Do(req *policy.Request) (resp *http.Response, err erro
 
 // StartSpanOptions contains the optional values for StartSpan.
 type StartSpanOptions struct {
+	// Kind indicates the kind of Span.
+	Kind tracing.SpanKind
 	// Attributes contains key-value pairs of attributes for the span.
 	Attributes []tracing.Attribute
+	// Links contains links to other spans.
+	Links []tracing.Link
 }
 
 // StartSpan starts a new tracing span.
@@ -115,7 +121,6 @@ func StartSpan(ctx context.Context, name string, tracer tracing.Tracer, options 
 	// we MUST propagate the active tracer before returning so that the trace policy can access it
 	ctx = context.WithValue(ctx, shared.CtxWithTracingTracer{}, tracer)
 
-	const newSpanKind = tracing.SpanKindInternal
 	if activeSpan := ctx.Value(ctxActiveSpan{}); activeSpan != nil {
 		// per the design guidelines, if a SDK method Foo() calls SDK method Bar(),
 		// then the span for Bar() must be suppressed. however, if Bar() makes a REST
@@ -131,15 +136,20 @@ func StartSpan(ctx context.Context, name string, tracer tracing.Tracer, options 
 	if options == nil {
 		options = &StartSpanOptions{}
 	}
+	if options.Kind == 0 {
+		options.Kind = tracing.SpanKindInternal
+	}
 
 	ctx, span := tracer.Start(ctx, name, &tracing.SpanOptions{
-		Kind:       newSpanKind,
+		Kind:       options.Kind,
 		Attributes: options.Attributes,
+		Links:      options.Links,
 	})
-	ctx = context.WithValue(ctx, ctxActiveSpan{}, newSpanKind)
+	ctx = context.WithValue(ctx, ctxActiveSpan{}, options.Kind)
 	return ctx, func(err error) {
 		if err != nil {
 			errType := strings.Replace(fmt.Sprintf("%T", err), "*exported.", "*azcore.", 1)
+			span.SetAttributes(tracing.Attribute{Key: attrErrType, Value: errType})
 			span.SetStatus(tracing.SpanStatusError, fmt.Sprintf("%s:\n%s", errType, err.Error()))
 		}
 		span.End()

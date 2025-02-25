@@ -8,6 +8,11 @@
 
 package armnetapp
 
+// AccountsClientChangeKeyVaultResponse contains the response from method AccountsClient.BeginChangeKeyVault.
+type AccountsClientChangeKeyVaultResponse struct {
+	// placeholder for future response values
+}
+
 // AccountsClientCreateOrUpdateResponse contains the response from method AccountsClient.BeginCreateOrUpdate.
 type AccountsClientCreateOrUpdateResponse struct {
 	// NetApp account resource
@@ -17,6 +22,12 @@ type AccountsClientCreateOrUpdateResponse struct {
 // AccountsClientDeleteResponse contains the response from method AccountsClient.BeginDelete.
 type AccountsClientDeleteResponse struct {
 	// placeholder for future response values
+}
+
+// AccountsClientGetChangeKeyVaultInformationResponse contains the response from method AccountsClient.BeginGetChangeKeyVaultInformation.
+type AccountsClientGetChangeKeyVaultInformationResponse struct {
+	// Result of getKeyVaultStatus with information about how volumes under NetApp account are encrypted.
+	GetKeyVaultStatusResponse
 }
 
 // AccountsClientGetResponse contains the response from method AccountsClient.Get.
@@ -39,6 +50,11 @@ type AccountsClientListResponse struct {
 
 // AccountsClientRenewCredentialsResponse contains the response from method AccountsClient.BeginRenewCredentials.
 type AccountsClientRenewCredentialsResponse struct {
+	// placeholder for future response values
+}
+
+// AccountsClientTransitionToCmkResponse contains the response from method AccountsClient.BeginTransitionToCmk.
+type AccountsClientTransitionToCmkResponse struct {
 	// placeholder for future response values
 }
 
@@ -414,6 +430,12 @@ type VolumeQuotaRulesClientUpdateResponse struct {
 	VolumeQuotaRule
 }
 
+// VolumesClientAuthorizeExternalReplicationResponse contains the response from method VolumesClient.BeginAuthorizeExternalReplication.
+type VolumesClientAuthorizeExternalReplicationResponse struct {
+	// Information about svm peering process
+	SvmPeerCommandResponse
+}
+
 // VolumesClientAuthorizeReplicationResponse contains the response from method VolumesClient.BeginAuthorizeReplication.
 type VolumesClientAuthorizeReplicationResponse struct {
 	// placeholder for future response values
@@ -445,6 +467,11 @@ type VolumesClientDeleteResponse struct {
 	// placeholder for future response values
 }
 
+// VolumesClientFinalizeExternalReplicationResponse contains the response from method VolumesClient.BeginFinalizeExternalReplication.
+type VolumesClientFinalizeExternalReplicationResponse struct {
+	// placeholder for future response values
+}
+
 // VolumesClientFinalizeRelocationResponse contains the response from method VolumesClient.BeginFinalizeRelocation.
 type VolumesClientFinalizeRelocationResponse struct {
 	// placeholder for future response values
@@ -472,6 +499,17 @@ type VolumesClientListReplicationsResponse struct {
 type VolumesClientListResponse struct {
 	// List of volume resources
 	VolumeList
+}
+
+// VolumesClientPeerExternalClusterResponse contains the response from method VolumesClient.BeginPeerExternalCluster.
+type VolumesClientPeerExternalClusterResponse struct {
+	// Information about cluster peering process
+	ClusterPeerCommandResponse
+}
+
+// VolumesClientPerformReplicationTransferResponse contains the response from method VolumesClient.BeginPerformReplicationTransfer.
+type VolumesClientPerformReplicationTransferResponse struct {
+	// placeholder for future response values
 }
 
 // VolumesClientPoolChangeResponse contains the response from method VolumesClient.BeginPoolChange.

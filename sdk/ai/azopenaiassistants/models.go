@@ -216,6 +216,9 @@ type CreateAndRunThreadBody struct {
 	// values may be up to 512 characters in length.
 	Metadata map[string]*string
 
+	// Whether to enable parallel function calling during tool use.
+	ParallelToolCalls *bool
+
 	// Specifies the format that the model must output.
 	ResponseFormat *AssistantResponseFormat
 
@@ -319,6 +322,9 @@ type CreateCodeInterpreterToolResourceOptions struct {
 
 // CreateFileSearchToolResourceVectorStoreOptions - File IDs associated to the vector store to be passed to the helper.
 type CreateFileSearchToolResourceVectorStoreOptions struct {
+	// REQUIRED; The chunking strategy used to chunk the file(s). If not set, will use the auto strategy.
+	ChunkingStrategy VectorStoreChunkingStrategyRequestClassification
+
 	// REQUIRED; A list of file IDs to add to the vector store. There can be a maximum of 10000 files in a vector store.
 	FileIDs []string
 
@@ -384,6 +390,9 @@ type CreateRunBody struct {
 
 	// The overridden model name that the assistant should use to run the thread.
 	Model *string
+
+	// Whether to enable parallel function calling during tool use.
+	ParallelToolCalls *bool
 
 	// Specifies the format that the model must output.
 	ResponseFormat *AssistantResponseFormat
@@ -454,6 +463,9 @@ type CreateToolResourcesOptions struct {
 type CreateVectorStoreFileBatchBody struct {
 	// REQUIRED; A list of File IDs that the vector store should use. Useful for tools like file_search that can access files.
 	FileIDs []string
+
+	// The chunking strategy used to chunk the file(s). If not set, will use the auto strategy.
+	ChunkingStrategy VectorStoreChunkingStrategyRequestClassification
 }
 
 // FileDeletionStatus - A status response from a file deletion operation.
@@ -481,6 +493,9 @@ type FileListResponse struct {
 type FileSearchToolDefinition struct {
 	// REQUIRED; The object type.
 	Type *string
+
+	// Options overrides for the file search tool.
+	FileSearch *FileSearchToolDefinitionDetails
 }
 
 // GetToolDefinition implements the ToolDefinitionClassification interface for type FileSearchToolDefinition.
@@ -488,6 +503,15 @@ func (f *FileSearchToolDefinition) GetToolDefinition() *ToolDefinition {
 	return &ToolDefinition{
 		Type: f.Type,
 	}
+}
+
+// FileSearchToolDefinitionDetails - Options overrides for the file search tool.
+type FileSearchToolDefinitionDetails struct {
+	// The maximum number of results the file search tool should output. The default is 20 for gpt-4* models and 5 for gpt-3.5-turbo.
+	// This number should be between 1 and 50 inclusive.
+	// Note that the file search tool may output fewer than max_num_results results. See the file search tool documentation for
+	// more information.
+	MaxNumResults *int32
 }
 
 // FileSearchToolResource - A set of resources that are used by the file_search tool.
@@ -508,7 +532,7 @@ type FunctionDefinition struct {
 	Description *string
 }
 
-// FunctionName - The function name that will be used, if using the funtion tool
+// FunctionName - The function name that will be used, if using the function tool
 type FunctionName struct {
 	// REQUIRED; The name of the function to call
 	Name *string
@@ -889,6 +913,15 @@ type OpenAIFile struct {
 
 	// The error message with details in case processing of this file failed. This field is available in Azure OpenAI only.
 	StatusDetails *string
+}
+
+// CreateVectorStoreFileBody contains arguments for the [CreateVectorStoreFile] method.
+type CreateVectorStoreFileBody struct {
+	// REQUIRED; A File ID that the vector store should use. Useful for tools like file_search that can access files.
+	FileID *string
+
+	// The chunking strategy used to chunk the file(s). If not set, will use the auto strategy.
+	ChunkingStrategy VectorStoreChunkingStrategyRequestClassification
 }
 
 // RequiredAction - An abstract representation of a required action for an assistant thread run to continue.
@@ -1667,6 +1700,9 @@ type ThreadRun struct {
 	// REQUIRED; The object type, which is always 'thread.run'.
 	Object *string
 
+	// REQUIRED; Whether to enable parallel function calling during tool use.
+	ParallelToolCalls *bool
+
 	// REQUIRED; The response format of the tool calls used in this run.
 	ResponseFormat *AssistantResponseFormat
 
@@ -1958,8 +1994,42 @@ type VectorStore struct {
 	ExpiresAt *time.Time
 }
 
+// VectorStoreAutoChunkingStrategyRequest - The default strategy. This strategy currently uses a maxchunksizetokens of 800
+// and chunkoverlap_tokens of 400.
+type VectorStoreAutoChunkingStrategyRequest struct {
+	// REQUIRED; The object type.
+	Type *VectorStoreChunkingStrategyRequestType
+}
+
+// GetVectorStoreChunkingStrategyRequest implements the VectorStoreChunkingStrategyRequestClassification interface for type
+// VectorStoreAutoChunkingStrategyRequest.
+func (v *VectorStoreAutoChunkingStrategyRequest) GetVectorStoreChunkingStrategyRequest() *VectorStoreChunkingStrategyRequest {
+	return &VectorStoreChunkingStrategyRequest{
+		Type: v.Type,
+	}
+}
+
+// VectorStoreAutoChunkingStrategyResponse - This is returned when the chunking strategy is unknown. Typically, this is because
+// the file was indexed before the chunking_strategy concept was introduced in the API.
+type VectorStoreAutoChunkingStrategyResponse struct {
+	// REQUIRED; The object type.
+	Type *VectorStoreChunkingStrategyResponseType
+}
+
+// GetVectorStoreChunkingStrategyResponse implements the VectorStoreChunkingStrategyResponseClassification interface for type
+// VectorStoreAutoChunkingStrategyResponse.
+func (v *VectorStoreAutoChunkingStrategyResponse) GetVectorStoreChunkingStrategyResponse() *VectorStoreChunkingStrategyResponse {
+	return &VectorStoreChunkingStrategyResponse{
+		Type: v.Type,
+	}
+}
+
 // VectorStoreBody - Request object for creating a vector store.
 type VectorStoreBody struct {
+	// The chunking strategy used to chunk the file(s). If not set, will use the auto strategy. Only applicable if file_ids is
+	// non-empty.
+	ChunkingStrategy VectorStoreChunkingStrategyRequestClassification
+
 	// Details on when this vector store expires
 	ExpiresAfter *VectorStoreExpirationPolicy
 
@@ -1973,6 +2043,30 @@ type VectorStoreBody struct {
 
 	// The name of the vector store.
 	Name *string
+}
+
+// VectorStoreChunkingStrategyRequest - An abstract representation of a vector store chunking strategy configuration.
+type VectorStoreChunkingStrategyRequest struct {
+	// REQUIRED; The object type.
+	Type *VectorStoreChunkingStrategyRequestType
+}
+
+// GetVectorStoreChunkingStrategyRequest implements the VectorStoreChunkingStrategyRequestClassification interface for type
+// VectorStoreChunkingStrategyRequest.
+func (v *VectorStoreChunkingStrategyRequest) GetVectorStoreChunkingStrategyRequest() *VectorStoreChunkingStrategyRequest {
+	return v
+}
+
+// VectorStoreChunkingStrategyResponse - An abstract representation of a vector store chunking strategy configuration.
+type VectorStoreChunkingStrategyResponse struct {
+	// REQUIRED; The object type.
+	Type *VectorStoreChunkingStrategyResponseType
+}
+
+// GetVectorStoreChunkingStrategyResponse implements the VectorStoreChunkingStrategyResponseClassification interface for type
+// VectorStoreChunkingStrategyResponse.
+func (v *VectorStoreChunkingStrategyResponse) GetVectorStoreChunkingStrategyResponse() *VectorStoreChunkingStrategyResponse {
+	return v
 }
 
 // VectorStoreDeletionStatus - Response object for deleting a vector store.
@@ -1998,6 +2092,9 @@ type VectorStoreExpirationPolicy struct {
 
 // VectorStoreFile - Description of a file attached to a vector store.
 type VectorStoreFile struct {
+	// REQUIRED; The strategy used to chunk the file.
+	ChunkingStrategy VectorStoreChunkingStrategyResponseClassification
+
 	// REQUIRED; The Unix timestamp (in seconds) for when the vector store file was created.
 	CreatedAt *time.Time
 
@@ -2124,6 +2221,51 @@ type VectorStoreFilesPage struct {
 
 	// REQUIRED; The object type, which is always list.
 	Object *string
+}
+
+// VectorStoreStaticChunkingStrategyOptions - Options to configure a vector store static chunking strategy.
+type VectorStoreStaticChunkingStrategyOptions struct {
+	// REQUIRED; The number of tokens that overlap between chunks. The default value is 400. Note that the overlap must not exceed
+	// half of maxchunksize_tokens. *
+	ChunkOverlapTokens *int32
+
+	// REQUIRED; The maximum number of tokens in each chunk. The default value is 800. The minimum value is 100 and the maximum
+	// value is 4096.
+	MaxChunkSizeTokens *int32
+}
+
+// VectorStoreStaticChunkingStrategyRequest - A statically configured chunking strategy.
+type VectorStoreStaticChunkingStrategyRequest struct {
+	// REQUIRED; The options for the static chunking strategy.
+	Static *VectorStoreStaticChunkingStrategyOptions
+
+	// REQUIRED; The object type.
+	Type *VectorStoreChunkingStrategyRequestType
+}
+
+// GetVectorStoreChunkingStrategyRequest implements the VectorStoreChunkingStrategyRequestClassification interface for type
+// VectorStoreStaticChunkingStrategyRequest.
+func (v *VectorStoreStaticChunkingStrategyRequest) GetVectorStoreChunkingStrategyRequest() *VectorStoreChunkingStrategyRequest {
+	return &VectorStoreChunkingStrategyRequest{
+		Type: v.Type,
+	}
+}
+
+// VectorStoreStaticChunkingStrategyResponse - A statically configured chunking strategy.
+type VectorStoreStaticChunkingStrategyResponse struct {
+	// REQUIRED; The options for the static chunking strategy.
+	Static *VectorStoreStaticChunkingStrategyOptions
+
+	// REQUIRED; The object type.
+	Type *VectorStoreChunkingStrategyResponseType
+}
+
+// GetVectorStoreChunkingStrategyResponse implements the VectorStoreChunkingStrategyResponseClassification interface for type
+// VectorStoreStaticChunkingStrategyResponse.
+func (v *VectorStoreStaticChunkingStrategyResponse) GetVectorStoreChunkingStrategyResponse() *VectorStoreChunkingStrategyResponse {
+	return &VectorStoreChunkingStrategyResponse{
+		Type: v.Type,
+	}
 }
 
 // VectorStoreUpdateBody - Request object for updating a vector store.

@@ -18,7 +18,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/servicefabricmanagedclusters/armservicefabricmanagedclusters"
 )
 
-// Generated from example definition: https://github.com/Azure/azure-rest-api-specs/blob/a651ba25cda4eec698a3a4e35f867ecc2681d126/specification/servicefabricmanagedclusters/resource-manager/Microsoft.ServiceFabric/stable/2024-04-01/examples/NodeTypeListOperation_example.json
+// Generated from example definition: https://github.com/Azure/azure-rest-api-specs/blob/069a65e8a6d1a6c0c58d9a9d97610b7103b6e8a5/specification/servicefabricmanagedclusters/resource-manager/Microsoft.ServiceFabric/preview/2024-09-01-preview/examples/NodeTypeListOperation_example.json
 func ExampleNodeTypesClient_NewListByManagedClustersPager() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -125,7 +125,7 @@ func ExampleNodeTypesClient_NewListByManagedClustersPager() {
 	}
 }
 
-// Generated from example definition: https://github.com/Azure/azure-rest-api-specs/blob/a651ba25cda4eec698a3a4e35f867ecc2681d126/specification/servicefabricmanagedclusters/resource-manager/Microsoft.ServiceFabric/stable/2024-04-01/examples/RestartNodes_example.json
+// Generated from example definition: https://github.com/Azure/azure-rest-api-specs/blob/069a65e8a6d1a6c0c58d9a9d97610b7103b6e8a5/specification/servicefabricmanagedclusters/resource-manager/Microsoft.ServiceFabric/preview/2024-09-01-preview/examples/RestartNodes_example.json
 func ExampleNodeTypesClient_BeginRestart() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -150,7 +150,7 @@ func ExampleNodeTypesClient_BeginRestart() {
 	}
 }
 
-// Generated from example definition: https://github.com/Azure/azure-rest-api-specs/blob/a651ba25cda4eec698a3a4e35f867ecc2681d126/specification/servicefabricmanagedclusters/resource-manager/Microsoft.ServiceFabric/stable/2024-04-01/examples/ReimageNodes_UD_example.json
+// Generated from example definition: https://github.com/Azure/azure-rest-api-specs/blob/069a65e8a6d1a6c0c58d9a9d97610b7103b6e8a5/specification/servicefabricmanagedclusters/resource-manager/Microsoft.ServiceFabric/preview/2024-09-01-preview/examples/ReimageNodes_UD_example.json
 func ExampleNodeTypesClient_BeginReimage_reimageAllNodesByUpgradeDomain() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -173,7 +173,7 @@ func ExampleNodeTypesClient_BeginReimage_reimageAllNodesByUpgradeDomain() {
 	}
 }
 
-// Generated from example definition: https://github.com/Azure/azure-rest-api-specs/blob/a651ba25cda4eec698a3a4e35f867ecc2681d126/specification/servicefabricmanagedclusters/resource-manager/Microsoft.ServiceFabric/stable/2024-04-01/examples/ReimageNodes_example.json
+// Generated from example definition: https://github.com/Azure/azure-rest-api-specs/blob/069a65e8a6d1a6c0c58d9a9d97610b7103b6e8a5/specification/servicefabricmanagedclusters/resource-manager/Microsoft.ServiceFabric/preview/2024-09-01-preview/examples/ReimageNodes_example.json
 func ExampleNodeTypesClient_BeginReimage_reimageNodes() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -198,7 +198,7 @@ func ExampleNodeTypesClient_BeginReimage_reimageNodes() {
 	}
 }
 
-// Generated from example definition: https://github.com/Azure/azure-rest-api-specs/blob/a651ba25cda4eec698a3a4e35f867ecc2681d126/specification/servicefabricmanagedclusters/resource-manager/Microsoft.ServiceFabric/stable/2024-04-01/examples/DeleteNodes_example.json
+// Generated from example definition: https://github.com/Azure/azure-rest-api-specs/blob/069a65e8a6d1a6c0c58d9a9d97610b7103b6e8a5/specification/servicefabricmanagedclusters/resource-manager/Microsoft.ServiceFabric/preview/2024-09-01-preview/examples/DeleteNodes_example.json
 func ExampleNodeTypesClient_BeginDeleteNode() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -223,7 +223,7 @@ func ExampleNodeTypesClient_BeginDeleteNode() {
 	}
 }
 
-// Generated from example definition: https://github.com/Azure/azure-rest-api-specs/blob/a651ba25cda4eec698a3a4e35f867ecc2681d126/specification/servicefabricmanagedclusters/resource-manager/Microsoft.ServiceFabric/stable/2024-04-01/examples/NodeTypeGetOperation_example.json
+// Generated from example definition: https://github.com/Azure/azure-rest-api-specs/blob/069a65e8a6d1a6c0c58d9a9d97610b7103b6e8a5/specification/servicefabricmanagedclusters/resource-manager/Microsoft.ServiceFabric/preview/2024-09-01-preview/examples/NodeTypeGetOperation_example.json
 func ExampleNodeTypesClient_Get() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -277,7 +277,7 @@ func ExampleNodeTypesClient_Get() {
 	// }
 }
 
-// Generated from example definition: https://github.com/Azure/azure-rest-api-specs/blob/a651ba25cda4eec698a3a4e35f867ecc2681d126/specification/servicefabricmanagedclusters/resource-manager/Microsoft.ServiceFabric/stable/2024-04-01/examples/NodeTypePutOperationAutoScale_example.json
+// Generated from example definition: https://github.com/Azure/azure-rest-api-specs/blob/069a65e8a6d1a6c0c58d9a9d97610b7103b6e8a5/specification/servicefabricmanagedclusters/resource-manager/Microsoft.ServiceFabric/preview/2024-09-01-preview/examples/NodeTypePutOperationAutoScale_example.json
 func ExampleNodeTypesClient_BeginCreateOrUpdate_putANodeTypeWithAutoScaleParameters() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -413,7 +413,7 @@ func ExampleNodeTypesClient_BeginCreateOrUpdate_putANodeTypeWithAutoScaleParamet
 	// 	}
 }
 
-// Generated from example definition: https://github.com/Azure/azure-rest-api-specs/blob/a651ba25cda4eec698a3a4e35f867ecc2681d126/specification/servicefabricmanagedclusters/resource-manager/Microsoft.ServiceFabric/stable/2024-04-01/examples/NodeTypePutOperation_example_max.json
+// Generated from example definition: https://github.com/Azure/azure-rest-api-specs/blob/069a65e8a6d1a6c0c58d9a9d97610b7103b6e8a5/specification/servicefabricmanagedclusters/resource-manager/Microsoft.ServiceFabric/preview/2024-09-01-preview/examples/NodeTypePutOperation_example_max.json
 func ExampleNodeTypesClient_BeginCreateOrUpdate_putANodeTypeWithMaximumParameters() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -513,6 +513,15 @@ func ExampleNodeTypesClient_BeginCreateOrUpdate_putANodeTypeWithMaximumParameter
 			SubnetID:                     to.Ptr("/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/resRg/providers/Microsoft.Network/virtualNetworks/vnet1/subnets/subnet1"),
 			UseDefaultPublicLoadBalancer: to.Ptr(true),
 			UseEphemeralOSDisk:           to.Ptr(true),
+			VMApplications: []*armservicefabricmanagedclusters.VMApplication{
+				{
+					ConfigurationReference:          to.Ptr("https://mystorageaccount.blob.core.windows.net/containername/blobname"),
+					EnableAutomaticUpgrade:          to.Ptr(true),
+					Order:                           to.Ptr[int32](1),
+					PackageReferenceID:              to.Ptr("/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/resRg/providers/Microsoft.Compute/galleries/myGallery/applications/myApplication/versions/1.0.0"),
+					TreatFailureAsDeploymentFailure: to.Ptr(false),
+					VMGalleryTags:                   to.Ptr("{\"Tag1\":\"Value1\",\"Tag2\":\"Value2\"}"),
+				}},
 			VMExtensions: []*armservicefabricmanagedclusters.VMSSExtension{
 				{
 					Name: to.Ptr("Microsoft.Azure.Geneva.GenevaMonitoring"),
@@ -659,6 +668,15 @@ func ExampleNodeTypesClient_BeginCreateOrUpdate_putANodeTypeWithMaximumParameter
 	// 		SubnetID: to.Ptr("/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/resRg/providers/Microsoft.Network/virtualNetworks/vnet1/subnets/subnet1"),
 	// 		UseDefaultPublicLoadBalancer: to.Ptr(true),
 	// 		UseEphemeralOSDisk: to.Ptr(true),
+	// 		VMApplications: []*armservicefabricmanagedclusters.VMApplication{
+	// 			{
+	// 				ConfigurationReference: to.Ptr("https://mystorageaccount.blob.core.windows.net/containername/blobname"),
+	// 				EnableAutomaticUpgrade: to.Ptr(true),
+	// 				Order: to.Ptr[int32](1),
+	// 				PackageReferenceID: to.Ptr("/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/resRg/providers/Microsoft.Compute/galleries/myGallery/applications/myApplication/versions/1.0.0"),
+	// 				TreatFailureAsDeploymentFailure: to.Ptr(false),
+	// 				VMGalleryTags: to.Ptr("{\"Tag1\":\"Value1\",\"Tag2\":\"Value2\"}"),
+	// 		}},
 	// 		VMExtensions: []*armservicefabricmanagedclusters.VMSSExtension{
 	// 			{
 	// 				Name: to.Ptr("Microsoft.Azure.Geneva.GenevaMonitoring"),
@@ -708,7 +726,7 @@ func ExampleNodeTypesClient_BeginCreateOrUpdate_putANodeTypeWithMaximumParameter
 	// 				}
 }
 
-// Generated from example definition: https://github.com/Azure/azure-rest-api-specs/blob/a651ba25cda4eec698a3a4e35f867ecc2681d126/specification/servicefabricmanagedclusters/resource-manager/Microsoft.ServiceFabric/stable/2024-04-01/examples/NodeTypePutOperation_example_min.json
+// Generated from example definition: https://github.com/Azure/azure-rest-api-specs/blob/069a65e8a6d1a6c0c58d9a9d97610b7103b6e8a5/specification/servicefabricmanagedclusters/resource-manager/Microsoft.ServiceFabric/preview/2024-09-01-preview/examples/NodeTypePutOperation_example_min.json
 func ExampleNodeTypesClient_BeginCreateOrUpdate_putANodeTypeWithMinimumParameters() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -767,7 +785,7 @@ func ExampleNodeTypesClient_BeginCreateOrUpdate_putANodeTypeWithMinimumParameter
 	// }
 }
 
-// Generated from example definition: https://github.com/Azure/azure-rest-api-specs/blob/a651ba25cda4eec698a3a4e35f867ecc2681d126/specification/servicefabricmanagedclusters/resource-manager/Microsoft.ServiceFabric/stable/2024-04-01/examples/NodeTypePutOperationStateless_example.json
+// Generated from example definition: https://github.com/Azure/azure-rest-api-specs/blob/069a65e8a6d1a6c0c58d9a9d97610b7103b6e8a5/specification/servicefabricmanagedclusters/resource-manager/Microsoft.ServiceFabric/preview/2024-09-01-preview/examples/NodeTypePutOperationStateless_example.json
 func ExampleNodeTypesClient_BeginCreateOrUpdate_putAnStatelessNodeTypeWithTemporaryDiskForServiceFabric() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -849,7 +867,7 @@ func ExampleNodeTypesClient_BeginCreateOrUpdate_putAnStatelessNodeTypeWithTempor
 	// }
 }
 
-// Generated from example definition: https://github.com/Azure/azure-rest-api-specs/blob/a651ba25cda4eec698a3a4e35f867ecc2681d126/specification/servicefabricmanagedclusters/resource-manager/Microsoft.ServiceFabric/stable/2024-04-01/examples/NodeTypePutOperationCustomImage_example.json
+// Generated from example definition: https://github.com/Azure/azure-rest-api-specs/blob/069a65e8a6d1a6c0c58d9a9d97610b7103b6e8a5/specification/servicefabricmanagedclusters/resource-manager/Microsoft.ServiceFabric/preview/2024-09-01-preview/examples/NodeTypePutOperationCustomImage_example.json
 func ExampleNodeTypesClient_BeginCreateOrUpdate_putNodeTypeWithCustomVmImage() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -902,7 +920,7 @@ func ExampleNodeTypesClient_BeginCreateOrUpdate_putNodeTypeWithCustomVmImage() {
 	// }
 }
 
-// Generated from example definition: https://github.com/Azure/azure-rest-api-specs/blob/a651ba25cda4eec698a3a4e35f867ecc2681d126/specification/servicefabricmanagedclusters/resource-manager/Microsoft.ServiceFabric/stable/2024-04-01/examples/NodeTypePutOperationDedicatedHost_example.json
+// Generated from example definition: https://github.com/Azure/azure-rest-api-specs/blob/069a65e8a6d1a6c0c58d9a9d97610b7103b6e8a5/specification/servicefabricmanagedclusters/resource-manager/Microsoft.ServiceFabric/preview/2024-09-01-preview/examples/NodeTypePutOperationDedicatedHost_example.json
 func ExampleNodeTypesClient_BeginCreateOrUpdate_putNodeTypeWithDedicatedHosts() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -970,7 +988,7 @@ func ExampleNodeTypesClient_BeginCreateOrUpdate_putNodeTypeWithDedicatedHosts() 
 	// 	}
 }
 
-// Generated from example definition: https://github.com/Azure/azure-rest-api-specs/blob/a651ba25cda4eec698a3a4e35f867ecc2681d126/specification/servicefabricmanagedclusters/resource-manager/Microsoft.ServiceFabric/stable/2024-04-01/examples/NodeTypePutOperationCustomSharedGalleriesImage_example.json
+// Generated from example definition: https://github.com/Azure/azure-rest-api-specs/blob/069a65e8a6d1a6c0c58d9a9d97610b7103b6e8a5/specification/servicefabricmanagedclusters/resource-manager/Microsoft.ServiceFabric/preview/2024-09-01-preview/examples/NodeTypePutOperationCustomSharedGalleriesImage_example.json
 func ExampleNodeTypesClient_BeginCreateOrUpdate_putNodeTypeWithSharedGalleriesCustomVmImage() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -1023,7 +1041,7 @@ func ExampleNodeTypesClient_BeginCreateOrUpdate_putNodeTypeWithSharedGalleriesCu
 	// }
 }
 
-// Generated from example definition: https://github.com/Azure/azure-rest-api-specs/blob/a651ba25cda4eec698a3a4e35f867ecc2681d126/specification/servicefabricmanagedclusters/resource-manager/Microsoft.ServiceFabric/stable/2024-04-01/examples/NodeTypePutOperationVmImagePlan_example.json
+// Generated from example definition: https://github.com/Azure/azure-rest-api-specs/blob/069a65e8a6d1a6c0c58d9a9d97610b7103b6e8a5/specification/servicefabricmanagedclusters/resource-manager/Microsoft.ServiceFabric/preview/2024-09-01-preview/examples/NodeTypePutOperationVmImagePlan_example.json
 func ExampleNodeTypesClient_BeginCreateOrUpdate_putNodeTypeWithVmImagePlan() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -1092,8 +1110,8 @@ func ExampleNodeTypesClient_BeginCreateOrUpdate_putNodeTypeWithVmImagePlan() {
 	// }
 }
 
-// Generated from example definition: https://github.com/Azure/azure-rest-api-specs/blob/a651ba25cda4eec698a3a4e35f867ecc2681d126/specification/servicefabricmanagedclusters/resource-manager/Microsoft.ServiceFabric/stable/2024-04-01/examples/NodeTypePatchOperation_example.json
-func ExampleNodeTypesClient_Update_patchANodeType() {
+// Generated from example definition: https://github.com/Azure/azure-rest-api-specs/blob/069a65e8a6d1a6c0c58d9a9d97610b7103b6e8a5/specification/servicefabricmanagedclusters/resource-manager/Microsoft.ServiceFabric/preview/2024-09-01-preview/examples/NodeTypePatchOperation_example.json
+func ExampleNodeTypesClient_BeginUpdate_patchANodeType() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
 		log.Fatalf("failed to obtain a credential: %v", err)
@@ -1103,13 +1121,17 @@ func ExampleNodeTypesClient_Update_patchANodeType() {
 	if err != nil {
 		log.Fatalf("failed to create client: %v", err)
 	}
-	res, err := clientFactory.NewNodeTypesClient().Update(ctx, "resRg", "myCluster", "BE", armservicefabricmanagedclusters.NodeTypeUpdateParameters{
+	poller, err := clientFactory.NewNodeTypesClient().BeginUpdate(ctx, "resRg", "myCluster", "BE", armservicefabricmanagedclusters.NodeTypeUpdateParameters{
 		Tags: map[string]*string{
 			"a": to.Ptr("b"),
 		},
 	}, nil)
 	if err != nil {
 		log.Fatalf("failed to finish the request: %v", err)
+	}
+	res, err := poller.PollUntilDone(ctx, nil)
+	if err != nil {
+		log.Fatalf("failed to pull the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
@@ -1172,8 +1194,8 @@ func ExampleNodeTypesClient_Update_patchANodeType() {
 	// 	}
 }
 
-// Generated from example definition: https://github.com/Azure/azure-rest-api-specs/blob/a651ba25cda4eec698a3a4e35f867ecc2681d126/specification/servicefabricmanagedclusters/resource-manager/Microsoft.ServiceFabric/stable/2024-04-01/examples/NodeTypePatchOperationAutoScale_example.json
-func ExampleNodeTypesClient_Update_patchANodeTypeWhileAutoScaling() {
+// Generated from example definition: https://github.com/Azure/azure-rest-api-specs/blob/069a65e8a6d1a6c0c58d9a9d97610b7103b6e8a5/specification/servicefabricmanagedclusters/resource-manager/Microsoft.ServiceFabric/preview/2024-09-01-preview/examples/NodeTypePatchOperationAutoScale_example.json
+func ExampleNodeTypesClient_BeginUpdate_patchANodeTypeWhileAutoScaling() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
 		log.Fatalf("failed to obtain a credential: %v", err)
@@ -1183,7 +1205,7 @@ func ExampleNodeTypesClient_Update_patchANodeTypeWhileAutoScaling() {
 	if err != nil {
 		log.Fatalf("failed to create client: %v", err)
 	}
-	res, err := clientFactory.NewNodeTypesClient().Update(ctx, "resRg", "myCluster", "BE", armservicefabricmanagedclusters.NodeTypeUpdateParameters{
+	poller, err := clientFactory.NewNodeTypesClient().BeginUpdate(ctx, "resRg", "myCluster", "BE", armservicefabricmanagedclusters.NodeTypeUpdateParameters{
 		SKU: &armservicefabricmanagedclusters.NodeTypeSKU{
 			Name:     to.Ptr("Standard_S0"),
 			Capacity: to.Ptr[int32](10),
@@ -1195,6 +1217,10 @@ func ExampleNodeTypesClient_Update_patchANodeTypeWhileAutoScaling() {
 	}, nil)
 	if err != nil {
 		log.Fatalf("failed to finish the request: %v", err)
+	}
+	res, err := poller.PollUntilDone(ctx, nil)
+	if err != nil {
+		log.Fatalf("failed to pull the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
@@ -1262,7 +1288,7 @@ func ExampleNodeTypesClient_Update_patchANodeTypeWhileAutoScaling() {
 	// 	}
 }
 
-// Generated from example definition: https://github.com/Azure/azure-rest-api-specs/blob/a651ba25cda4eec698a3a4e35f867ecc2681d126/specification/servicefabricmanagedclusters/resource-manager/Microsoft.ServiceFabric/stable/2024-04-01/examples/NodeTypeDeleteOperation_example.json
+// Generated from example definition: https://github.com/Azure/azure-rest-api-specs/blob/069a65e8a6d1a6c0c58d9a9d97610b7103b6e8a5/specification/servicefabricmanagedclusters/resource-manager/Microsoft.ServiceFabric/preview/2024-09-01-preview/examples/NodeTypeDeleteOperation_example.json
 func ExampleNodeTypesClient_BeginDelete() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {

@@ -17,6 +17,11 @@ import (
 const credNameUserPassword = "UsernamePasswordCredential"
 
 // UsernamePasswordCredentialOptions contains optional parameters for UsernamePasswordCredential.
+//
+// Deprecated: UsernamePasswordCredential is deprecated because it can't support multifactor
+// authentication. See [Entra ID documentation] for migration guidance.
+//
+// [Entra ID documentation]: https://aka.ms/azsdk/identity/mfa
 type UsernamePasswordCredentialOptions struct {
 	azcore.ClientOptions
 
@@ -31,7 +36,7 @@ type UsernamePasswordCredentialOptions struct {
 
 	// Cache is a persistent cache the credential will use to store the tokens it acquires, making
 	// them available to other processes and credential instances. The default, zero value means the
-	// credential will store tokens in memory and not share them.
+	// credential will store tokens in memory and not share them with any other credential instance.
 	Cache Cache
 
 	// DisableInstanceDiscovery should be set true only by applications authenticating in disconnected clouds, or
@@ -43,8 +48,13 @@ type UsernamePasswordCredentialOptions struct {
 
 // UsernamePasswordCredential authenticates a user with a password. Microsoft doesn't recommend this kind of authentication,
 // because it's less secure than other authentication flows. This credential is not interactive, so it isn't compatible
-// with any form of multi-factor authentication, and the application must already have user or admin consent.
+// with any form of multifactor authentication, and the application must already have user or admin consent.
 // This credential can only authenticate work and school accounts; it can't authenticate Microsoft accounts.
+//
+// Deprecated: this credential is deprecated because it can't support multifactor authentication. See [Entra ID documentation]
+// for migration guidance.
+//
+// [Entra ID documentation]: https://aka.ms/azsdk/identity/mfa
 type UsernamePasswordCredential struct {
 	client *publicClient
 }

@@ -13,7 +13,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -23,6 +22,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	azruntime "github.com/Azure/azure-sdk-for-go/sdk/azcore/runtime"
+	"github.com/Azure/azure-sdk-for-go/sdk/internal/log"
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/mock"
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/recording"
 	"github.com/stretchr/testify/require"
@@ -224,22 +224,17 @@ func TestManagedIdentityCredential_AzureArcErrors(t *testing.T) {
 func TestManagedIdentityCredential_AzureContainerInstanceLive(t *testing.T) {
 	// This test triggers the managed identity test app deployed to an Azure Container Instance.
 	// See the bicep file and test resources scripts for details.
-	// It triggers the app with az because the test subscription prohibits opening ports to the internet.
-	name := os.Getenv("AZIDENTITY_ACI_NAME")
-	rg := os.Getenv("AZIDENTITY_RESOURCE_GROUP")
-	if name == "" || rg == "" {
-		t.Skip("set AZIDENTITY_ACI_NAME and AZIDENTITY_RESOURCE_GROUP to run this test")
+	ip := os.Getenv("AZIDENTITY_ACI_IP")
+	if ip == "" {
+		t.Skip("set AZIDENTITY_ACI_IP to run this test")
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-	defer cancel()
-	command := fmt.Sprintf("az container exec -g %s -n %s --exec-command 'wget -qO- localhost'", rg, name)
-	// using "script" as a workaround for "az container exec" requiring a tty
-	// https://github.com/Azure/azure-cli/issues/17530
-	cmd := exec.CommandContext(ctx, "script", "-q", "-O", "/dev/null", "-c", command)
-	b, err := cmd.CombinedOutput()
-	s := string(b)
-	require.NoError(t, err, s)
-	require.Equal(t, "test passed", s)
+	res, err := http.Get("http://" + ip)
+	require.NoError(t, err)
+	if res.StatusCode != http.StatusOK {
+		b, err := azruntime.Payload(res)
+		require.NoError(t, err)
+		t.Fatal("test application returned an error: " + string(b))
+	}
 }
 
 func TestManagedIdentityCredential_AzureFunctionsLive(t *testing.T) {
@@ -578,41 +573,53 @@ func TestManagedIdentityCredential_IMDSLive(t *testing.T) {
 	if recording.GetRecordMode() != recording.PlaybackMode && !liveManagedIdentity.imds {
 		t.Skip("set IDENTITY_IMDS_AVAILABLE to run this test")
 	}
-	opts, stop := initRecording(t)
-	defer stop()
-	cred, err := NewManagedIdentityCredential(&ManagedIdentityCredentialOptions{ClientOptions: opts})
-	if err != nil {
-		t.Fatal(err)
-	}
-	testGetTokenSuccess(t, cred)
-}
 
-func TestManagedIdentityCredential_IMDSClientIDLive(t *testing.T) {
-	if recording.GetRecordMode() != recording.PlaybackMode && !liveManagedIdentity.imds || liveManagedIdentity.clientID == "" {
-		t.Skip("set IDENTITY_IMDS_AVAILABLE and IDENTITY_VM_USER_ASSIGNED_MI_CLIENT_ID to run this test")
-	}
-	opts, stop := initRecording(t)
-	defer stop()
-	o := ManagedIdentityCredentialOptions{ClientOptions: opts, ID: ClientID(liveManagedIdentity.clientID)}
-	cred, err := NewManagedIdentityCredential(&o)
-	if err != nil {
-		t.Fatal(err)
-	}
-	testGetTokenSuccess(t, cred)
-}
+	t.Run("client ID", func(t *testing.T) {
+		if recording.GetRecordMode() != recording.PlaybackMode && liveManagedIdentity.clientID == "" {
+			t.Skip("set IDENTITY_VM_USER_ASSIGNED_MI_CLIENT_ID to run this test")
+		}
+		opts, stop := initRecording(t)
+		defer stop()
+		cred, err := NewManagedIdentityCredential(&ManagedIdentityCredentialOptions{
+			ClientOptions: opts, ID: ClientID(liveManagedIdentity.clientID)},
+		)
+		require.NoError(t, err)
+		testGetTokenSuccess(t, cred)
+	})
 
-func TestManagedIdentityCredential_IMDSResourceIDLive(t *testing.T) {
-	if recording.GetRecordMode() != recording.PlaybackMode && !liveManagedIdentity.imds || liveManagedIdentity.resourceID == "" {
-		t.Skip("set IDENTITY_IMDS_AVAILABLE and IDENTITY_VM_USER_ASSIGNED_MI_RESOURCE_ID to run this test")
-	}
-	opts, stop := initRecording(t)
-	defer stop()
-	o := ManagedIdentityCredentialOptions{ClientOptions: opts, ID: ResourceID(liveManagedIdentity.resourceID)}
-	cred, err := NewManagedIdentityCredential(&o)
-	if err != nil {
-		t.Fatal(err)
-	}
-	testGetTokenSuccess(t, cred)
+	t.Run("object ID", func(t *testing.T) {
+		if recording.GetRecordMode() != recording.PlaybackMode && liveManagedIdentity.objectID == "" {
+			t.Skip("set IDENTITY_VM_USER_ASSIGNED_MI_OBJECT_ID to run this test")
+		}
+		opts, stop := initRecording(t)
+		defer stop()
+		cred, err := NewManagedIdentityCredential(&ManagedIdentityCredentialOptions{
+			ClientOptions: opts, ID: ObjectID(liveManagedIdentity.objectID)},
+		)
+		require.NoError(t, err)
+		testGetTokenSuccess(t, cred)
+	})
+
+	t.Run("resource ID", func(t *testing.T) {
+		if recording.GetRecordMode() != recording.PlaybackMode && liveManagedIdentity.resourceID == "" {
+			t.Skip("set IDENTITY_VM_USER_ASSIGNED_MI_RESOURCE_ID to run this test")
+		}
+		opts, stop := initRecording(t)
+		defer stop()
+		cred, err := NewManagedIdentityCredential(&ManagedIdentityCredentialOptions{
+			ClientOptions: opts, ID: ResourceID(liveManagedIdentity.resourceID)},
+		)
+		require.NoError(t, err)
+		testGetTokenSuccess(t, cred)
+	})
+
+	t.Run("system assigned", func(t *testing.T) {
+		opts, stop := initRecording(t)
+		defer stop()
+		cred, err := NewManagedIdentityCredential(&ManagedIdentityCredentialOptions{ClientOptions: opts})
+		require.NoError(t, err)
+		testGetTokenSuccess(t, cred)
+	})
 }
 
 func TestManagedIdentityCredential_IMDSRetries(t *testing.T) {
@@ -648,6 +655,66 @@ func TestManagedIdentityCredential_IMDSRetries(t *testing.T) {
 	}
 }
 
+func TestManagedIdentityCredential_Logs(t *testing.T) {
+	logs := []string{}
+	log.SetListener(func(e log.Event, msg string) {
+		if e == EventAuthentication {
+			logs = append(logs, msg)
+		}
+	})
+	defer log.SetListener(nil)
+
+	for _, id := range []ManagedIDKind{ClientID(fakeClientID), ObjectID(fakeObjectID), ResourceID(fakeResourceID), nil} {
+		_, err := NewManagedIdentityCredential(&ManagedIdentityCredentialOptions{ID: id})
+		require.NoError(t, err)
+		require.Len(t, logs, 1)
+		require.Contains(t, logs[0], "IMDS")
+		if id != nil {
+			require.Contains(t, logs[0], id.String())
+			kind := ""
+			switch id.(type) {
+			case ClientID:
+				kind = "client"
+			case ObjectID:
+				kind = "object"
+			case ResourceID:
+				kind = "resource"
+			}
+			require.Contains(t, logs[0], kind+" ID")
+		}
+		logs = nil
+	}
+}
+
+func TestManagedIdentityCredential_UnexpectedIMDSResponse(t *testing.T) {
+	srv, close := mock.NewServer(mock.WithTransformAllRequestsToTestServerUrl())
+	defer close()
+	tests := [][]mock.ResponseOption{
+		{mock.WithBody([]byte("not json")), mock.WithStatusCode(http.StatusOK)},
+	}
+	// credential should return AuthenticationFailedError when a token request ends with a retriable response
+	ro := policy.RetryOptions{}
+	setIMDSRetryOptionDefaults(&ro)
+	for _, c := range ro.StatusCodes {
+		tests = append(tests, []mock.ResponseOption{mock.WithStatusCode(c)})
+	}
+	for _, res := range tests {
+		srv.AppendResponse(res...)
+
+		c, err := NewManagedIdentityCredential(&ManagedIdentityCredentialOptions{
+			ClientOptions: policy.ClientOptions{
+				Retry:     policy.RetryOptions{MaxRetries: -1},
+				Transport: srv,
+			},
+		})
+		require.NoError(t, err)
+
+		_, err = c.GetToken(ctx, testTRO)
+		var af *AuthenticationFailedError
+		require.ErrorAs(t, err, &af, "unexpected token response from IMDS should prompt an AuthenticationFailedError")
+	}
+}
+
 func TestManagedIdentityCredential_ServiceFabric(t *testing.T) {
 	expectedSecret := "expected-secret"
 	pred := func(req *http.Request) bool {
@@ -678,33 +745,35 @@ func TestManagedIdentityCredential_UnsupportedID(t *testing.T) {
 	t.Run("Azure Arc", func(t *testing.T) {
 		t.Setenv(identityEndpoint, fakeMIEndpoint)
 		t.Setenv(arcIMDSEndpoint, fakeMIEndpoint)
-		_, err := NewManagedIdentityCredential(&ManagedIdentityCredentialOptions{ID: ResourceID(fakeResourceID)})
-		require.Error(t, err)
-		_, err = NewManagedIdentityCredential(&ManagedIdentityCredentialOptions{ID: ClientID(fakeClientID)})
-		require.Error(t, err)
+		for _, id := range []ManagedIDKind{ClientID(fakeClientID), ObjectID(fakeObjectID), ResourceID(fakeResourceID)} {
+			_, err := NewManagedIdentityCredential(&ManagedIdentityCredentialOptions{ID: id})
+			require.Errorf(t, err, "expected an error for %T", id)
+		}
 	})
 	t.Run("Azure ML", func(t *testing.T) {
 		t.Setenv(msiEndpoint, fakeMIEndpoint)
 		t.Setenv(msiSecret, "...")
 		_, err := NewManagedIdentityCredential(&ManagedIdentityCredentialOptions{ID: ResourceID(fakeResourceID)})
 		require.Error(t, err)
+		_, err = NewManagedIdentityCredential(&ManagedIdentityCredentialOptions{ID: ObjectID(fakeObjectID)})
+		require.Error(t, err)
 		_, err = NewManagedIdentityCredential(&ManagedIdentityCredentialOptions{ID: ClientID(fakeClientID)})
 		require.NoError(t, err)
 	})
 	t.Run("Cloud Shell", func(t *testing.T) {
 		t.Setenv(msiEndpoint, fakeMIEndpoint)
-		_, err := NewManagedIdentityCredential(&ManagedIdentityCredentialOptions{ID: ResourceID(fakeResourceID)})
-		require.Error(t, err)
-		_, err = NewManagedIdentityCredential(&ManagedIdentityCredentialOptions{ID: ClientID(fakeClientID)})
-		require.Error(t, err)
+		for _, id := range []ManagedIDKind{ClientID(fakeClientID), ObjectID(fakeObjectID), ResourceID(fakeResourceID)} {
+			_, err := NewManagedIdentityCredential(&ManagedIdentityCredentialOptions{ID: id})
+			require.Errorf(t, err, "expected an error for %T", id)
+		}
 	})
 	t.Run("Service Fabric", func(t *testing.T) {
 		t.Setenv(identityEndpoint, fakeMIEndpoint)
 		t.Setenv(identityHeader, "...")
 		t.Setenv(identityServerThumbprint, "...")
-		_, err := NewManagedIdentityCredential(&ManagedIdentityCredentialOptions{ID: ResourceID(fakeResourceID)})
-		require.Error(t, err)
-		_, err = NewManagedIdentityCredential(&ManagedIdentityCredentialOptions{ID: ClientID(fakeClientID)})
-		require.Error(t, err)
+		for _, id := range []ManagedIDKind{ClientID(fakeClientID), ObjectID(fakeObjectID), ResourceID(fakeResourceID)} {
+			_, err := NewManagedIdentityCredential(&ManagedIdentityCredentialOptions{ID: id})
+			require.Errorf(t, err, "expected an error for %T", id)
+		}
 	})
 }

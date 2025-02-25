@@ -1,6 +1,3 @@
-//go:build go1.18
-// +build go1.18
-
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
@@ -730,4 +727,32 @@ func TestWrapUnwrap(t *testing.T) {
 			require.Equal(t, keyBytes, unwrapResp.Result)
 		})
 	}
+}
+
+func TestAPIVersion(t *testing.T) {
+	apiVersion := "7.3"
+	var requireVersion = func(req *http.Request) bool {
+		version := req.URL.Query().Get("api-version")
+		require.Equal(t, version, apiVersion)
+		return true
+	}
+	srv, close := mock.NewServer(mock.WithTransformAllRequestsToTestServerUrl())
+	defer close()
+	srv.AppendResponse(
+		mock.WithStatusCode(200),
+		mock.WithPredicate(requireVersion),
+	)
+	srv.AppendResponse(mock.WithStatusCode(http.StatusInternalServerError))
+
+	opts := &azkeys.ClientOptions{
+		ClientOptions: azcore.ClientOptions{
+			Transport:  srv,
+			APIVersion: apiVersion,
+		},
+	}
+	client, err := azkeys.NewClient(vaultURL, &azcred.Fake{}, opts)
+	require.NoError(t, err)
+
+	_, err = client.GetKey(context.Background(), "name", "", nil)
+	require.NoError(t, err)
 }

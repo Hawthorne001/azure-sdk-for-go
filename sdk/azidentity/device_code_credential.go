@@ -21,8 +21,9 @@ const credNameDeviceCode = "DeviceCodeCredential"
 type DeviceCodeCredentialOptions struct {
 	azcore.ClientOptions
 
-	// AdditionallyAllowedTenants specifies additional tenants for which the credential may acquire
-	// tokens. Add the wildcard value "*" to allow the credential to acquire tokens for any tenant.
+	// AdditionallyAllowedTenants specifies tenants to which the credential may authenticate, in addition to
+	// TenantID. When TenantID is empty, this option has no effect and the credential will authenticate to
+	// any requested tenant. Add the wildcard value "*" to allow the credential to authenticate to any tenant.
 	AdditionallyAllowedTenants []string
 
 	// AuthenticationRecord returned by a call to a credential's Authenticate method. Set this option
@@ -31,7 +32,7 @@ type DeviceCodeCredentialOptions struct {
 
 	// Cache is a persistent cache the credential will use to store the tokens it acquires, making
 	// them available to other processes and credential instances. The default, zero value means the
-	// credential will store tokens in memory and not share them.
+	// credential will store tokens in memory and not share them with any other credential instance.
 	Cache Cache
 
 	// ClientID is the ID of the application to which users will authenticate. When not set, users

@@ -35,6 +35,9 @@ parameters:
     type: string
   - name: UseFederatedAuth
     type: boolean
+    default: true
+  - name: PersistOidcToken
+    type: boolean
     default: false
 
 jobs:
@@ -77,6 +80,7 @@ jobs:
         parameters:
           SubscriptionConfiguration: ${{ parameters.CloudConfig.SubscriptionConfiguration }}
           SubscriptionConfigurations: ${{ parameters.CloudConfig.SubscriptionConfigurations }}
+          SubscriptionConfigurationFilePaths: ${{ parameters.CloudConfig.SubscriptionConfigurationFilePaths }}
           EnvVars:
             Pool: $(Pool)
             ${{ insert }}: ${{ parameters.EnvVars }}
@@ -91,6 +95,7 @@ jobs:
           UseFederatedAuth: ${{ parameters.UseFederatedAuth }}
           ServiceConnection: ${{ parameters.CloudConfig.ServiceConnection }}
           SubscriptionConfigurationFilePaths: ${{ parameters.CloudConfig.SubscriptionConfigurationFilePaths}}
+          PersistOidcToken: ${{ parameters.PersistOidcToken }}
           EnvVars:
             Pool: $(Pool)
             ${{ insert }}: ${{ parameters.EnvVars }}

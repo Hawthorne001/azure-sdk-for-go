@@ -1,6 +1,6 @@
 # Azure Identity Cache Module for Go
 
-This module implements a cross-platform persistent token cache for [azidentity](https://pkg.go.dev/github.com/Azure/azure-sdk-for-go/sdk/azidentity) credentials. See that module's [examples](https://pkg.go.dev/github.com/Azure/azure-sdk-for-go/sdk/azidentity#pkg-examples) for sample code showing how to configure persistent caching for a credential.
+This module implements a cross-platform persistent token cache for [azidentity](https://pkg.go.dev/github.com/Azure/azure-sdk-for-go/sdk/azidentity) credentials. See that module's [examples](https://pkg.go.dev/github.com/Azure/azure-sdk-for-go/sdk/azidentity#pkg-examples) for sample code showing how to configure persistent caching for a credential, and its [token caching document](https://aka.ms/azsdk/go/identity/caching) for more information about the implementation.
 
 ## Provide Feedback
 
@@ -26,4 +26,4 @@ For more information, see the
 or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any
 additional questions or comments.
 
-![Impressions](https://azure-sdk-impressions.azurewebsites.net/api/impressions/azure-sdk-for-go%2Fsdk%2Fazidentity%2Fcache%2FREADME.png)
+

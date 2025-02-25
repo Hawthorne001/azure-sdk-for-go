@@ -1,7 +1,11 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package typespec
 
 import (
 	"errors"
+	"log"
 	"regexp"
 
 	"github.com/goccy/go-yaml"
@@ -42,16 +46,22 @@ func NewGoEmitterOptions(emitOption any) (*GoEmitterOptions, error) {
 	return &option, err
 }
 
-const moduleRegex = `^github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/(\w+)/arm(\w+)$`
+const moduleRegex = `^github.com/Azure/azure-sdk-for-go/sdk/` +
+	`(` +
+	`resourcemanager/\w+/arm\w+` + // either an ARM package (ie: github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/servicebus/armservicebus)
+	`|` +
+	`.+?/az[^/]+` + // or a data plane package (ie, github.com/Azure/azure-sdk-for-go/sdk/messaging/eventgrid/aznamespaces)
+	`)$`
 
 var (
 	ErrModuleEmpty  = errors.New("typesepec-go option `module` is required")
-	ErrModuleFormat = errors.New("module must be in the format of github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/xxx/armxxx")
+	ErrModuleFormat = errors.New("module must be in the format of github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/xxx/armxxx or github.com/Azure/azure-sdk-for-go/sdk/xxx/azxxx")
 )
 
 func (o *GoEmitterOptions) Validate() error {
 	if o.Module == "" {
-		return ErrModuleEmpty
+		log.Printf("typesepec-go option `module` is empty")
+		return nil
 	}
 
 	matched := regexp.MustCompile(moduleRegex).MatchString(o.Module)
