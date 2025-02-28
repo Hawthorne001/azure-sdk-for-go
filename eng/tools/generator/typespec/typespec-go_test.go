@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package typespec_test
 
 import (
@@ -6,6 +9,26 @@ import (
 	"github.com/Azure/azure-sdk-for-go/eng/tools/generator/typespec"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestGoEmitterOptionsAreValid(t *testing.T) {
+	modules := []string{
+		"github.com/Azure/azure-sdk-for-go/sdk/messaging/eventgrid/aznamespaces",
+		"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/servicebus/armservicebus",
+	}
+
+	for _, module := range modules {
+		t.Run("Check "+module, func(t *testing.T) {
+			// module format is correct
+			goOption := map[string]any{
+				"module": module,
+			}
+			goEmitOptions, err := typespec.NewGoEmitterOptions(goOption)
+			assert.NoError(t, err)
+			err = goEmitOptions.Validate()
+			assert.NoError(t, err)
+		})
+	}
+}
 
 func TestGoEmitterOptionsValidate(t *testing.T) {
 	goOption := map[string]any{
@@ -40,5 +63,5 @@ func TestGoEmitterOptionsValidate(t *testing.T) {
 	goEmitOptions, err = typespec.NewGoEmitterOptions(goOption)
 	assert.NoError(t, err)
 	err = goEmitOptions.Validate()
-	assert.EqualError(t, err, typespec.ErrModuleEmpty.Error())
+	assert.NoError(t, err)
 }

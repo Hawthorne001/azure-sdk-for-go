@@ -1,14 +1,60 @@
 # Release History
 
-## 1.14.1 (Unreleased)
+## 1.18.0-beta.1 (Unreleased)
 
 ### Features Added
+
+* Added field `NewPropagatorFn` to `tracing.ProviderOptions` to support custom propagators.
+* Added type `SpanContext` to the `tracing` package to support Span Context.
+* Added method `SpanContext()` to `tracing.Span` to support Span Context.
+* Added func `NewSpanContext()` to the `tracing` package to support Span Context.
+* Added type `Link` to the `tracing` package to support Span Links.
+* Added method `LinkFromContext()` to `tracing.Tracer` to support Span Links.
+* Added method `AddLink()` to `tracing.Span` to support Span Links.
+* Added field `Links` to `runtime.StartSpanOptions` to support Span Links.
+* Added type `Propagator` to the `tracing` package to support context propagation.
+* Added type `Carrier` to the `tracing` package to support context propagation.
+* Added method `NewPropagator()` to type `tracing.Provider` to support context propagation.
 
 ### Breaking Changes
 
 ### Bugs Fixed
 
 ### Other Changes
+
+* Added Span Attribute `error.type` to report an error when ending a span with `runtime.StartSpan`.
+
+## 1.17.0 (2025-01-07)
+
+### Features Added
+
+* Added field `OperationLocationResultPath` to `runtime.NewPollerOptions[T]` for LROs that use the `Operation-Location` pattern.
+* Support `encoding.TextMarshaler` and `encoding.TextUnmarshaler` interfaces in `arm.ResourceID`.
+
+## 1.16.0 (2024-10-17)
+
+### Features Added
+
+* Added field `Kind` to `runtime.StartSpanOptions` to allow a kind to be set when starting a span.
+
+### Bugs Fixed
+
+* `BearerTokenPolicy` now rewinds request bodies before retrying
+
+## 1.15.0 (2024-10-14)
+
+### Features Added
+
+* `BearerTokenPolicy` handles CAE claims challenges
+
+### Bugs Fixed
+
+* Omit the `ResponseError.RawResponse` field from JSON marshaling so instances can be marshaled.
+* Fixed an integer overflow in the retry policy.
+
+### Other Changes
+
+* Update dependencies.
 
 ## 1.14.0 (2024-08-07)
 

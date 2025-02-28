@@ -129,8 +129,7 @@ type ActiveDirectory struct {
 	// If enabled, Traffic between the SMB server to Domain Controller (DC) will be encrypted.
 	EncryptDCConnections *bool
 
-	// kdc server IP addresses for the active directory machine. This optional parameter is used only while creating kerberos
-	// volume.
+	// kdc server IP address for the active directory machine. This optional parameter is used only while creating kerberos volume.
 	KdcIP *string
 
 	// Specifies whether or not the LDAP traffic needs to be secured via TLS.
@@ -281,7 +280,7 @@ type BackupPolicyProperties struct {
 	// Weekly backups count to keep
 	WeeklyBackupsToKeep *int32
 
-	// READ-ONLY; Backup Policy Resource ID
+	// READ-ONLY; Backup Policy GUID ID
 	BackupPolicyID *string
 
 	// READ-ONLY; Azure lifecycle management
@@ -507,6 +506,22 @@ type CapacityPoolPatch struct {
 	Type *string
 }
 
+// ChangeKeyVault - Change key vault request
+type ChangeKeyVault struct {
+	// REQUIRED; The name of the key that should be used for encryption.
+	KeyName *string
+
+	// REQUIRED; Pairs of virtual network ID and private endpoint ID. Every virtual network that has volumes encrypted with customer-managed
+	// keys needs its own key vault private endpoint.
+	KeyVaultPrivateEndpoints []*KeyVaultPrivateEndpoint
+
+	// REQUIRED; The URI of the key vault/managed HSM that should be used for encryption.
+	KeyVaultURI *string
+
+	// Azure resource ID of the key vault/managed HSM that should be used for encryption.
+	KeyVaultResourceID *string
+}
+
 // CheckAvailabilityResponse - Information regarding availability of a resource.
 type CheckAvailabilityResponse struct {
 	// true indicates name is valid and available. false indicates the name is invalid, unavailable, or both.
@@ -520,6 +535,13 @@ type CheckAvailabilityResponse struct {
 	// Invalid indicates the name provided does not match Azure App Service naming requirements. AlreadyExists indicates that
 	// the name is already in use and is therefore unavailable.
 	Reason *InAvailabilityReasonType
+}
+
+// ClusterPeerCommandResponse - Information about cluster peering process
+type ClusterPeerCommandResponse struct {
+	// A command that needs to be run on the external ONTAP to accept cluster peering. Will only be present if clusterPeeringStatus
+	// is pending
+	PeerAcceptCommand *string
 }
 
 // DailySchedule - Daily Schedule properties
@@ -554,6 +576,15 @@ type EncryptionIdentity struct {
 
 	// READ-ONLY; The principal ID (object ID) of the identity used to authenticate with key vault. Read-only.
 	PrincipalID *string
+}
+
+// EncryptionTransitionRequest - Encryption transition request
+type EncryptionTransitionRequest struct {
+	// REQUIRED; Identifier of the private endpoint to reach the Azure Key Vault
+	PrivateEndpointID *string
+
+	// REQUIRED; Identifier for the virtual network
+	VirtualNetworkID *string
 }
 
 // ExportPolicyRule - Volume Export Policy Rule
@@ -613,6 +644,10 @@ type FilePathAvailabilityRequest struct {
 
 	// REQUIRED; The Azure Resource URI for a delegated subnet. Must have the delegation Microsoft.NetApp/volumes
 	SubnetID *string
+
+	// The Azure Resource logical availability zone which is used within zone mapping lookup for the subscription and region.
+	// The lookup will retrieve the physical zone where volume is placed.
+	AvailabilityZone *string
 }
 
 // GetGroupIDListForLDAPUserRequest - Get group Id list for LDAP User request
@@ -627,6 +662,28 @@ type GetGroupIDListForLDAPUserResponse struct {
 	GroupIDsForLdapUser []*string
 }
 
+// GetKeyVaultStatusResponse - Result of getKeyVaultStatus with information about how volumes under NetApp account are encrypted.
+type GetKeyVaultStatusResponse struct {
+	// Represents the properties of the getKeyVaultStatus.
+	Properties *GetKeyVaultStatusResponseProperties
+}
+
+// GetKeyVaultStatusResponseProperties - Properties which represents Change key vault status.
+type GetKeyVaultStatusResponseProperties struct {
+	// The name of the key that should be used for encryption.
+	KeyName *string
+
+	// Pairs of virtual network ID and private endpoint ID. Every virtual network that has volumes encrypted with customer-managed
+	// keys needs its own key vault private endpoint.
+	KeyVaultPrivateEndpoints []*KeyVaultPrivateEndpoint
+
+	// Azure resource ID of the key vault/managed HSM that should be used for encryption.
+	KeyVaultResourceID *string
+
+	// The URI of the key vault/managed HSM that should be used for encryption.
+	KeyVaultURI *string
+}
+
 // HourlySchedule - Hourly Schedule properties
 type HourlySchedule struct {
 	// Indicates which minute snapshot should be taken
@@ -639,16 +696,26 @@ type HourlySchedule struct {
 	UsedBytes *int64
 }
 
+// KeyVaultPrivateEndpoint - Pairs of virtual network ID and private endpoint ID. Every virtual network that has volumes encrypted
+// with customer-managed keys needs its own key vault private endpoint.
+type KeyVaultPrivateEndpoint struct {
+	// Identifier of the private endpoint to reach the Azure Key Vault
+	PrivateEndpointID *string
+
+	// Identifier for the virtual network id
+	VirtualNetworkID *string
+}
+
 // KeyVaultProperties - Properties of key vault.
 type KeyVaultProperties struct {
 	// REQUIRED; The name of KeyVault key.
 	KeyName *string
 
-	// REQUIRED; The resource ID of KeyVault.
-	KeyVaultResourceID *string
-
 	// REQUIRED; The Uri of KeyVault.
 	KeyVaultURI *string
+
+	// The resource ID of KeyVault.
+	KeyVaultResourceID *string
 
 	// READ-ONLY; UUID v4 used to identify the Azure Key Vault configuration
 	KeyVaultID *string
@@ -862,6 +929,12 @@ type OperationProperties struct {
 	ServiceSpecification *ServiceSpecification
 }
 
+// PeerClusterForVolumeMigrationRequest - Source Cluster properties for a cluster peer request
+type PeerClusterForVolumeMigrationRequest struct {
+	// REQUIRED; A list of IC-LIF IPs that can be used to connect to the On-prem cluster
+	PeerIPAddresses []*string
+}
+
 // PlacementKeyValuePairs - Application specific parameters for the placement of volumes in the volume group
 type PlacementKeyValuePairs struct {
 	// REQUIRED; Key for an application specific parameter for the placement of volumes in the volume group
@@ -885,7 +958,7 @@ type PoolPatchProperties struct {
 	// The qos type of the pool
 	QosType *QosType
 
-	// Provisioned size of the pool (in bytes). Allowed values are in 1TiB chunks (value must be multiply of 1099511627776).
+	// Provisioned size of the pool (in bytes). Allowed values are in 1TiB chunks (value must be multiple of 1099511627776).
 	Size *int64
 }
 
@@ -894,7 +967,7 @@ type PoolProperties struct {
 	// REQUIRED; The service level of the file system
 	ServiceLevel *ServiceLevel
 
-	// REQUIRED; Provisioned size of the pool (in bytes). Allowed values are in 1TiB chunks (value must be multiply of 1099511627776).
+	// REQUIRED; Provisioned size of the pool (in bytes). Allowed values are in 1TiB chunks (value must be multiple of 1099511627776).
 	Size *int64
 
 	// If enabled (true) the pool can contain cool Access enabled volumes.
@@ -998,6 +1071,18 @@ type RelocateVolumeRequest struct {
 	CreationToken *string
 }
 
+// RemotePath - The full path to a volume that is to be migrated into ANF. Required for Migration volumes
+type RemotePath struct {
+	// REQUIRED; The Path to a ONTAP Host
+	ExternalHostName *string
+
+	// REQUIRED; The name of a server on the ONTAP Host
+	ServerName *string
+
+	// REQUIRED; The name of a volume on the server
+	VolumeName *string
+}
+
 // Replication properties
 type Replication struct {
 	// REQUIRED; The resource ID of the remote volume.
@@ -1011,18 +1096,24 @@ type Replication struct {
 
 	// Schedule
 	ReplicationSchedule *ReplicationSchedule
+
+	// READ-ONLY; UUID v4 used to identify the replication.
+	ReplicationID *string
 }
 
 // ReplicationObject - Replication properties
 type ReplicationObject struct {
-	// REQUIRED; The resource ID of the remote volume.
-	RemoteVolumeResourceID *string
-
 	// Indicates whether the local volume is the source or destination for the Volume Replication
 	EndpointType *EndpointType
 
+	// The full path to a volume that is to be migrated into ANF. Required for Migration volumes
+	RemotePath *RemotePath
+
 	// The remote region for the other end of the Volume Replication.
 	RemoteVolumeRegion *string
+
+	// The resource ID of the remote volume. Required for cross region and cross zone replication
+	RemoteVolumeResourceID *string
 
 	// Schedule
 	ReplicationSchedule *ReplicationSchedule
@@ -1358,6 +1449,13 @@ type SubvolumesList struct {
 	Value []*SubvolumeInfo
 }
 
+// SvmPeerCommandResponse - Information about svm peering process
+type SvmPeerCommandResponse struct {
+	// A command that needs to be run on the external ONTAP to accept svm peering. Will only be present if svmPeeringStatus is
+	// pending
+	SvmPeeringCommand *string
+}
+
 // SystemData - Metadata pertaining to creation and last modification of the resource.
 type SystemData struct {
 	// The timestamp of resource creation (UTC).
@@ -1605,6 +1703,12 @@ type VolumePatchProperties struct {
 	// both sequential and random reads. Never - No client-driven data is pulled from cool tier to standard storage.
 	CoolAccessRetrievalPolicy *CoolAccessRetrievalPolicy
 
+	// coolAccessTieringPolicy determines which cold data blocks are moved to cool tier. The possible values for this field are:
+	// Auto - Moves cold user data blocks in both the Snapshot copies and the active
+	// file system to the cool tier tier. This policy is the default. SnapshotOnly - Moves user data blocks of the Volume Snapshot
+	// copies that are not associated with the active file system to the cool tier.
+	CoolAccessTieringPolicy *CoolAccessTieringPolicy
+
 	// Specifies the number of days after which data that is not accessed by clients will be tiered.
 	CoolnessPeriod *int32
 
@@ -1650,9 +1754,10 @@ type VolumePatchProperties struct {
 	// owner and read/execute to group and other users.
 	UnixPermissions *string
 
-	// Maximum storage quota allowed for a file system in bytes. This is a soft quota used for alerting only. Minimum size is
-	// 100 GiB. Upper limit is 100TiB, 500Tib for LargeVolume or 2400Tib for LargeVolume
-	// on exceptional basis. Specified in bytes.
+	// Maximum storage quota allowed for a file system in bytes. This is a soft quota used for alerting only. For regular volumes,
+	// valid values are in the range 50GiB to 100TiB. For large volumes, valid
+	// values are in the range 100TiB to 500TiB, and on an exceptional basis, from to 2400GiB to 2400TiB. Values expressed in
+	// bytes as multiples of 1 GiB.
 	UsageThreshold *int64
 }
 
@@ -1679,9 +1784,10 @@ type VolumeProperties struct {
 	// REQUIRED; The Azure Resource URI for a delegated subnet. Must have the delegation Microsoft.NetApp/volumes
 	SubnetID *string
 
-	// REQUIRED; Maximum storage quota allowed for a file system in bytes. This is a soft quota used for alerting only. Minimum
-	// size is 100 GiB. Upper limit is 100TiB, 500Tib for LargeVolume or 2400Tib for LargeVolume
-	// on exceptional basis. Specified in bytes.
+	// REQUIRED; Maximum storage quota allowed for a file system in bytes. This is a soft quota used for alerting only. For regular
+	// volumes, valid values are in the range 50GiB to 100TiB. For large volumes, valid
+	// values are in the range 100TiB to 500TiB, and on an exceptional basis, from to 2400GiB to 2400TiB. Values expressed in
+	// bytes as multiples of 1 GiB.
 	UsageThreshold *int64
 
 	// Specifies whether the volume is enabled for Azure VMware Solution (AVS) datastore purpose
@@ -1702,6 +1808,12 @@ type VolumeProperties struct {
 	// - All client-driven data read is pulled from cool tier to standard storage on
 	// both sequential and random reads. Never - No client-driven data is pulled from cool tier to standard storage.
 	CoolAccessRetrievalPolicy *CoolAccessRetrievalPolicy
+
+	// coolAccessTieringPolicy determines which cold data blocks are moved to cool tier. The possible values for this field are:
+	// Auto - Moves cold user data blocks in both the Snapshot copies and the active
+	// file system to the cool tier tier. This policy is the default. SnapshotOnly - Moves user data blocks of the Volume Snapshot
+	// copies that are not associated with the active file system to the cool tier.
+	CoolAccessTieringPolicy *CoolAccessTieringPolicy
 
 	// Specifies the number of days after which data that is not accessed by clients will be tiered.
 	CoolnessPeriod *int32
@@ -1749,7 +1861,7 @@ type VolumeProperties struct {
 	// Specifies whether LDAP is enabled or not for a given NFS volume.
 	LdapEnabled *bool
 
-	// Network features available to the volume, or current state of update.
+	// The original value of the network features type available to the volume at the time it was created.
 	NetworkFeatures *NetworkFeatures
 
 	// Application specific placement rules for the particular volume
@@ -1818,6 +1930,9 @@ type VolumeProperties struct {
 
 	// READ-ONLY; Data store resource unique identifier
 	DataStoreResourceID []*string
+
+	// READ-ONLY; The effective value of the network features type available to the volume, or current effective state of update.
+	EffectiveNetworkFeatures *NetworkFeatures
 
 	// READ-ONLY; Specifies if the volume is encrypted or not. Only available on volumes created or updated after 2022-01-01.
 	Encrypted *bool

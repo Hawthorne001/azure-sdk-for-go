@@ -17,7 +17,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/servicefabricmanagedclusters/armservicefabricmanagedclusters"
 )
 
-// Generated from example definition: https://github.com/Azure/azure-rest-api-specs/blob/a651ba25cda4eec698a3a4e35f867ecc2681d126/specification/servicefabricmanagedclusters/resource-manager/Microsoft.ServiceFabric/stable/2024-04-01/examples/ManagedMaintenanceWindowStatusGet_example.json
+// Generated from example definition: https://github.com/Azure/azure-rest-api-specs/blob/069a65e8a6d1a6c0c58d9a9d97610b7103b6e8a5/specification/servicefabricmanagedclusters/resource-manager/Microsoft.ServiceFabric/preview/2024-09-01-preview/examples/ManagedMaintenanceWindowStatusGet_example.json
 func ExampleManagedMaintenanceWindowStatusClient_Get() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -40,8 +40,8 @@ func ExampleManagedMaintenanceWindowStatusClient_Get() {
 	// 	IsRegionReady: to.Ptr(true),
 	// 	IsWindowActive: to.Ptr(true),
 	// 	IsWindowEnabled: to.Ptr(false),
-	// 	LastWindowEndTimeUTC: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2023-04-29T16:00:00.000Z"); return t}()),
-	// 	LastWindowStartTimeUTC: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2023-04-29T16:00:00.000Z"); return t}()),
-	// 	LastWindowStatusUpdateAtUTC: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2023-04-29T16:00:00.000Z"); return t}()),
+	// 	LastWindowEndTimeUTC: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2023-04-30T00:00:00.000Z"); return t}()),
+	// 	LastWindowStartTimeUTC: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2023-04-30T00:00:00.000Z"); return t}()),
+	// 	LastWindowStatusUpdateAtUTC: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2023-04-30T00:00:00.000Z"); return t}()),
 	// }
 }

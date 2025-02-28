@@ -10,76 +10,18 @@ import (
 	"context"
 	"errors"
 	"io"
-	"reflect"
 	"strings"
 	"testing"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/ai/azopenai"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/to"
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/recording"
 	"github.com/stretchr/testify/require"
 )
 
-func TestNewClient(t *testing.T) {
-	type args struct {
-		endpoint   string
-		credential azcore.TokenCredential
-		options    *azopenai.ClientOptions
-	}
-	tests := []struct {
-		name    string
-		args    args
-		want    *azopenai.Client
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := azopenai.NewClient(tt.args.endpoint, tt.args.credential, tt.args.options)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("NewClient() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("NewClient() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestNewClientWithKeyCredential(t *testing.T) {
-	type args struct {
-		endpoint   string
-		credential *azcore.KeyCredential
-		options    *azopenai.ClientOptions
-	}
-	tests := []struct {
-		name    string
-		args    args
-		want    *azopenai.Client
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := azopenai.NewClientWithKeyCredential(tt.args.endpoint, tt.args.credential, tt.args.options)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("NewClientWithKeyCredential() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("NewClientWithKeyCredential() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
 func TestGetCompletionsStream(t *testing.T) {
 	testFn := func(t *testing.T, epm endpointWithModel) {
-		body := azopenai.CompletionsOptions{
+		body := azopenai.CompletionsStreamOptions{
 			Prompt:         []string{"What is Azure OpenAI?"},
 			MaxTokens:      to.Ptr(int32(2048)),
 			Temperature:    to.Ptr(float32(0.0)),
@@ -89,8 +31,7 @@ func TestGetCompletionsStream(t *testing.T) {
 		client := newTestClient(t, epm.Endpoint)
 
 		response, err := client.GetCompletionsStream(context.TODO(), body, nil)
-		skipNowIfThrottled(t, err)
-		require.NoError(t, err)
+		customRequireNoError(t, err, true)
 
 		if err != nil {
 			t.Errorf("Client.GetCompletionsStream() error = %v", err)
@@ -154,7 +95,7 @@ func TestClient_GetCompletions_Error(t *testing.T) {
 	doTest := func(t *testing.T, model string) {
 		client := newBogusAzureOpenAIClient(t)
 
-		streamResp, err := client.GetCompletionsStream(context.Background(), azopenai.CompletionsOptions{
+		streamResp, err := client.GetCompletionsStream(context.Background(), azopenai.CompletionsStreamOptions{
 			Prompt:         []string{"What is Azure OpenAI?"},
 			MaxTokens:      to.Ptr(int32(2048 - 127)),
 			Temperature:    to.Ptr(float32(0.0)),

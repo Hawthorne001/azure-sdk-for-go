@@ -41,6 +41,13 @@ func (c *ContainerClient) ID() string {
 func (c *ContainerClient) Read(
 	ctx context.Context,
 	o *ReadContainerOptions) (ContainerResponse, error) {
+	var err error
+	spanName, err := c.getSpanForContainer(operationTypeRead, resourceTypeCollection, c.id)
+	if err != nil {
+		return ContainerResponse{}, err
+	}
+	ctx, endSpan := runtime.StartSpan(ctx, spanName.name, c.database.client.internal.Tracer(), &spanName.options)
+	defer func() { endSpan(err) }()
 	if o == nil {
 		o = &ReadContainerOptions{}
 	}
@@ -65,7 +72,8 @@ func (c *ContainerClient) Read(
 		return ContainerResponse{}, err
 	}
 
-	return newContainerResponse(azResponse)
+	response, err := newContainerResponse(azResponse)
+	return response, err
 }
 
 // Replace a Cosmos container.
@@ -75,6 +83,13 @@ func (c *ContainerClient) Replace(
 	ctx context.Context,
 	containerProperties ContainerProperties,
 	o *ReplaceContainerOptions) (ContainerResponse, error) {
+	var err error
+	spanName, err := c.getSpanForContainer(operationTypeReplace, resourceTypeCollection, c.id)
+	if err != nil {
+		return ContainerResponse{}, err
+	}
+	ctx, endSpan := runtime.StartSpan(ctx, spanName.name, c.database.client.internal.Tracer(), &spanName.options)
+	defer func() { endSpan(err) }()
 	if o == nil {
 		o = &ReplaceContainerOptions{}
 	}
@@ -101,7 +116,8 @@ func (c *ContainerClient) Replace(
 		return ContainerResponse{}, err
 	}
 
-	return newContainerResponse(azResponse)
+	response, err := newContainerResponse(azResponse)
+	return response, err
 }
 
 // Delete a Cosmos container.
@@ -110,6 +126,13 @@ func (c *ContainerClient) Replace(
 func (c *ContainerClient) Delete(
 	ctx context.Context,
 	o *DeleteContainerOptions) (ContainerResponse, error) {
+	var err error
+	spanName, err := c.getSpanForContainer(operationTypeDelete, resourceTypeCollection, c.id)
+	if err != nil {
+		return ContainerResponse{}, err
+	}
+	ctx, endSpan := runtime.StartSpan(ctx, spanName.name, c.database.client.internal.Tracer(), &spanName.options)
+	defer func() { endSpan(err) }()
 	if o == nil {
 		o = &DeleteContainerOptions{}
 	}
@@ -135,7 +158,8 @@ func (c *ContainerClient) Delete(
 		return ContainerResponse{}, err
 	}
 
-	return newContainerResponse(azResponse)
+	response, err := newContainerResponse(azResponse)
+	return response, err
 }
 
 // ReadThroughput obtains the provisioned throughput information for the container.
@@ -144,6 +168,13 @@ func (c *ContainerClient) Delete(
 func (c *ContainerClient) ReadThroughput(
 	ctx context.Context,
 	o *ThroughputOptions) (ThroughputResponse, error) {
+	var err error
+	spanName, err := c.getSpanForContainer(operationTypeRead, resourceTypeOffer, c.id)
+	if err != nil {
+		return ThroughputResponse{}, err
+	}
+	ctx, endSpan := runtime.StartSpan(ctx, spanName.name, c.database.client.internal.Tracer(), &spanName.options)
+	defer func() { endSpan(err) }()
 	if o == nil {
 		o = &ThroughputOptions{}
 	}
@@ -154,7 +185,8 @@ func (c *ContainerClient) ReadThroughput(
 	}
 
 	offers := &cosmosOffers{client: c.database.client}
-	return offers.ReadThroughputIfExists(ctx, rid, o)
+	response, err := offers.ReadThroughputIfExists(ctx, rid, o)
+	return response, err
 }
 
 // ReplaceThroughput updates the provisioned throughput for the container.
@@ -165,6 +197,13 @@ func (c *ContainerClient) ReplaceThroughput(
 	ctx context.Context,
 	throughputProperties ThroughputProperties,
 	o *ThroughputOptions) (ThroughputResponse, error) {
+	var err error
+	spanName, err := c.getSpanForContainer(operationTypeReplace, resourceTypeOffer, c.id)
+	if err != nil {
+		return ThroughputResponse{}, err
+	}
+	ctx, endSpan := runtime.StartSpan(ctx, spanName.name, c.database.client.internal.Tracer(), &spanName.options)
+	defer func() { endSpan(err) }()
 	if o == nil {
 		o = &ThroughputOptions{}
 	}
@@ -175,7 +214,8 @@ func (c *ContainerClient) ReplaceThroughput(
 	}
 
 	offers := &cosmosOffers{client: c.database.client}
-	return offers.ReplaceThroughputIfExists(ctx, throughputProperties, rid, o)
+	response, err := offers.ReplaceThroughputIfExists(ctx, throughputProperties, rid, o)
+	return response, err
 }
 
 // CreateItem creates an item in a Cosmos container.
@@ -188,6 +228,13 @@ func (c *ContainerClient) CreateItem(
 	partitionKey PartitionKey,
 	item []byte,
 	o *ItemOptions) (ItemResponse, error) {
+	var err error
+	spanName, err := c.getSpanForItems(operationTypeCreate)
+	if err != nil {
+		return ItemResponse{}, err
+	}
+	ctx, endSpan := runtime.StartSpan(ctx, spanName.name, c.database.client.internal.Tracer(), &spanName.options)
+	defer func() { endSpan(err) }()
 	h := headerOptionsOverride{
 		partitionKey: &partitionKey,
 	}
@@ -220,7 +267,8 @@ func (c *ContainerClient) CreateItem(
 		return ItemResponse{}, err
 	}
 
-	return newItemResponse(azResponse)
+	response, err := newItemResponse(azResponse)
+	return response, err
 }
 
 // UpsertItem creates or replaces an item in a Cosmos container.
@@ -233,6 +281,13 @@ func (c *ContainerClient) UpsertItem(
 	partitionKey PartitionKey,
 	item []byte,
 	o *ItemOptions) (ItemResponse, error) {
+	var err error
+	spanName, err := c.getSpanForItems(operationTypeUpsert)
+	if err != nil {
+		return ItemResponse{}, err
+	}
+	ctx, endSpan := runtime.StartSpan(ctx, spanName.name, c.database.client.internal.Tracer(), &spanName.options)
+	defer func() { endSpan(err) }()
 	h := headerOptionsOverride{
 		partitionKey: &partitionKey,
 	}
@@ -269,7 +324,8 @@ func (c *ContainerClient) UpsertItem(
 		return ItemResponse{}, err
 	}
 
-	return newItemResponse(azResponse)
+	response, err := newItemResponse(azResponse)
+	return response, err
 }
 
 // ReplaceItem replaces an item in a Cosmos container.
@@ -284,6 +340,13 @@ func (c *ContainerClient) ReplaceItem(
 	itemId string,
 	item []byte,
 	o *ItemOptions) (ItemResponse, error) {
+	var err error
+	spanName, err := c.getSpanForItems(operationTypeReplace)
+	if err != nil {
+		return ItemResponse{}, err
+	}
+	ctx, endSpan := runtime.StartSpan(ctx, spanName.name, c.database.client.internal.Tracer(), &spanName.options)
+	defer func() { endSpan(err) }()
 	h := headerOptionsOverride{
 		partitionKey: &partitionKey,
 	}
@@ -316,7 +379,8 @@ func (c *ContainerClient) ReplaceItem(
 		return ItemResponse{}, err
 	}
 
-	return newItemResponse(azResponse)
+	response, err := newItemResponse(azResponse)
+	return response, err
 }
 
 // ReadItem reads an item in a Cosmos container.
@@ -329,6 +393,13 @@ func (c *ContainerClient) ReadItem(
 	partitionKey PartitionKey,
 	itemId string,
 	o *ItemOptions) (ItemResponse, error) {
+	var err error
+	spanName, err := c.getSpanForItems(operationTypeRead)
+	if err != nil {
+		return ItemResponse{}, err
+	}
+	ctx, endSpan := runtime.StartSpan(ctx, spanName.name, c.database.client.internal.Tracer(), &spanName.options)
+	defer func() { endSpan(err) }()
 	h := headerOptionsOverride{
 		partitionKey: &partitionKey,
 	}
@@ -357,7 +428,8 @@ func (c *ContainerClient) ReadItem(
 		return ItemResponse{}, err
 	}
 
-	return newItemResponse(azResponse)
+	response, err := newItemResponse(azResponse)
+	return response, err
 }
 
 // DeleteItem deletes an item in a Cosmos container.
@@ -370,6 +442,13 @@ func (c *ContainerClient) DeleteItem(
 	partitionKey PartitionKey,
 	itemId string,
 	o *ItemOptions) (ItemResponse, error) {
+	var err error
+	spanName, err := c.getSpanForItems(operationTypeDelete)
+	if err != nil {
+		return ItemResponse{}, err
+	}
+	ctx, endSpan := runtime.StartSpan(ctx, spanName.name, c.database.client.internal.Tracer(), &spanName.options)
+	defer func() { endSpan(err) }()
 	h := headerOptionsOverride{
 		partitionKey: &partitionKey,
 	}
@@ -401,13 +480,30 @@ func (c *ContainerClient) DeleteItem(
 		return ItemResponse{}, err
 	}
 
-	return newItemResponse(azResponse)
+	response, err := newItemResponse(azResponse)
+	return response, err
 }
 
 // NewQueryItemsPager executes a single partition query in a Cosmos container.
 // query - The SQL query to execute.
-// partitionKey - The partition key to scope the query on.
+// partitionKey - The partition key to scope the query on. See below for more information on cross partition queries.
 // o - Options for the operation.
+//
+// You can specify an empty list of partition keys by passing `NewPartitionKey()` to the `partitionKey` parameter, to indicate that the query WHERE clauses will specify which partitions to query.
+//
+// Limited cross partition queries ARE possible with the Go SDK.
+// If you specify partition keys in the `partitionKey` parameter, you must specify ALL partition keys that the container has (in the case of hierarchical partitioning).
+//
+// If the query itself contains WHERE clauses that filter down to a single partition, the query will be executed on that partition.
+// If the query does not filter down to a single partition (i.e. it does not filter on partition key at all, or filters on only some of the partition keys a container defines), the query will be executed as a cross partition query.
+// The Azure Cosmos DB Gateway API, used by the Go SDK, can only perform a LIMITED set of cross-partition queries.
+// Specifically, the gateway can only perform simple projections and filtering on cross partition queries.
+// See https://learn.microsoft.com/rest/api/cosmos-db/querying-cosmosdb-resources-using-the-rest-api#queries-that-cannot-be-served-by-gateway for more details.
+//
+// When performing a cross-partition query, the Gateway may return pages of inconsistent size, or even empty pages (while still having a non-nil continuation token).
+// Ensure you fully iterate the pager, even if you receive empty pages, to ensure you get all results.
+//
+// If you provide a query that the gateway cannot execute, it will return a BadRequest error.
 func (c *ContainerClient) NewQueryItemsPager(query string, partitionKey PartitionKey, o *QueryOptions) *runtime.Pager[QueryItemsResponse] {
 	correlatedActivityId, _ := uuid.New()
 	h := headerOptionsOverride{
@@ -434,6 +530,13 @@ func (c *ContainerClient) NewQueryItemsPager(query string, partitionKey Partitio
 			return page.ContinuationToken != nil
 		},
 		Fetcher: func(ctx context.Context, page *QueryItemsResponse) (QueryItemsResponse, error) {
+			var err error
+			spanName, err := c.getSpanForItems(operationTypeQuery)
+			if err != nil {
+				return QueryItemsResponse{}, err
+			}
+			ctx, endSpan := runtime.StartSpan(ctx, spanName.name, c.database.client.internal.Tracer(), &spanName.options)
+			defer func() { endSpan(err) }()
 			if page != nil {
 				if page.ContinuationToken != nil {
 					// Use the previous page continuation if available
@@ -471,6 +574,13 @@ func (c *ContainerClient) PatchItem(
 	itemId string,
 	ops PatchOperations,
 	o *ItemOptions) (ItemResponse, error) {
+	var err error
+	spanName, err := c.getSpanForItems(operationTypePatch)
+	if err != nil {
+		return ItemResponse{}, err
+	}
+	ctx, endSpan := runtime.StartSpan(ctx, spanName.name, c.database.client.internal.Tracer(), &spanName.options)
+	defer func() { endSpan(err) }()
 	h := headerOptionsOverride{
 		partitionKey: &partitionKey,
 	}
@@ -503,7 +613,8 @@ func (c *ContainerClient) PatchItem(
 		return ItemResponse{}, err
 	}
 
-	return newItemResponse(azResponse)
+	response, err := newItemResponse(azResponse)
+	return response, err
 }
 
 // NewTransactionalBatch creates a batch of operations to be committed as a single unit.
@@ -515,6 +626,13 @@ func (c *ContainerClient) NewTransactionalBatch(partitionKey PartitionKey) Trans
 // ExecuteTransactionalBatch executes a transactional batch.
 // Once executed, verify the Success property of the response to determine if the batch was committed
 func (c *ContainerClient) ExecuteTransactionalBatch(ctx context.Context, b TransactionalBatch, o *TransactionalBatchOptions) (TransactionalBatchResponse, error) {
+	var err error
+	spanName, err := c.getSpanForContainer(operationTypeBatch, resourceTypeCollection, c.id)
+	if err != nil {
+		return TransactionalBatchResponse{}, err
+	}
+	ctx, endSpan := runtime.StartSpan(ctx, spanName.name, c.database.client.internal.Tracer(), &spanName.options)
+	defer func() { endSpan(err) }()
 	if len(b.operations) == 0 {
 		return TransactionalBatchResponse{}, errors.New("no operations in batch")
 	}
@@ -563,7 +681,8 @@ func (c *ContainerClient) ExecuteTransactionalBatch(ctx context.Context, b Trans
 		return TransactionalBatchResponse{}, err
 	}
 
-	return newTransactionalBatchResponse(azResponse)
+	response, err := newTransactionalBatchResponse(azResponse)
+	return response, err
 }
 
 func (c *ContainerClient) getRID(ctx context.Context) (string, error) {
@@ -573,4 +692,12 @@ func (c *ContainerClient) getRID(ctx context.Context) (string, error) {
 	}
 
 	return containerResponse.ContainerProperties.ResourceID, nil
+}
+
+func (c *ContainerClient) getSpanForContainer(operationType operationType, resourceType resourceType, id string) (span, error) {
+	return getSpanNameForContainers(c.database.client.accountEndpointUrl(), operationType, resourceType, c.database.id, id)
+}
+
+func (c *ContainerClient) getSpanForItems(operationType operationType) (span, error) {
+	return getSpanNameForItems(c.database.client.accountEndpointUrl(), operationType, c.database.id, c.id)
 }

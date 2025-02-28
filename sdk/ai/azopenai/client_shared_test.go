@@ -32,15 +32,18 @@ type endpoint struct {
 }
 
 type testVars struct {
+	Batch                                 endpointWithModel
 	ChatCompletions                       endpointWithModel
 	ChatCompletionsLegacyFunctions        endpointWithModel
 	ChatCompletionsOYD                    endpointWithModel // azure only
 	ChatCompletionsRAI                    endpointWithModel // azure only
+	ChatCompletionsStructuredOutputs      endpointWithModel
 	ChatCompletionsWithJSONResponseFormat endpointWithModel
 	Cognitive                             azopenai.AzureSearchChatExtensionConfiguration
 	Completions                           endpointWithModel
 	DallE                                 endpointWithModel
 	Embeddings                            endpointWithModel
+	Files                                 endpointWithModel
 	Speech                                endpointWithModel
 	TextEmbedding3Small                   endpointWithModel
 	Vision                                endpointWithModel
@@ -112,6 +115,10 @@ var azureOpenAI, openAI = func() (testVars, testVars) {
 
 	newTestVarsFn := func(azure bool) testVars {
 		return testVars{
+			Batch: endpointWithModel{
+				Endpoint: ifAzure(azure, servers.SWECentral, servers.OpenAI),
+				Model:    "",
+			},
 			ChatCompletions: endpointWithModel{
 				Endpoint: ifAzure(azure, servers.USEast, servers.OpenAI),
 				Model:    ifAzure(azure, "gpt-4-0613", "gpt-4-0613"),
@@ -127,6 +134,10 @@ var azureOpenAI, openAI = func() (testVars, testVars) {
 			ChatCompletionsRAI: endpointWithModel{
 				Endpoint: ifAzure(azure, servers.USEast, servers.OpenAI),
 				Model:    ifAzure(azure, "gpt-4-0613", ""), // azure only
+			},
+			ChatCompletionsStructuredOutputs: endpointWithModel{
+				Endpoint: ifAzure(azure, servers.USEast, servers.OpenAI),
+				Model:    ifAzure(azure, "gpt-4o-0806", "gpt-4o"),
 			},
 			ChatCompletionsWithJSONResponseFormat: endpointWithModel{
 				Endpoint: ifAzure(azure, servers.SWECentral, servers.OpenAI),
@@ -144,6 +155,10 @@ var azureOpenAI, openAI = func() (testVars, testVars) {
 				Endpoint: ifAzure(azure, servers.USEast, servers.OpenAI),
 				Model:    ifAzure(azure, "text-embedding-ada-002", "text-embedding-ada-002"),
 			},
+			Files: endpointWithModel{
+				Endpoint: ifAzure(azure, servers.USEast2, servers.OpenAI),
+				Model:    "",
+			},
 			Speech: endpointWithModel{
 				Endpoint: ifAzure(azure, servers.USEast, servers.OpenAI),
 				Model:    ifAzure(azure, "tts-1", "tts-1"),
@@ -154,7 +169,7 @@ var azureOpenAI, openAI = func() (testVars, testVars) {
 			},
 			Vision: endpointWithModel{
 				Endpoint: ifAzure(azure, servers.SWECentral, servers.OpenAI),
-				Model:    ifAzure(azure, "gpt-4-vision-preview", "gpt-4-vision-preview"),
+				Model:    ifAzure(azure, "gpt-4o", "gpt-4o"),
 			},
 			Whisper: endpointWithModel{
 				Endpoint: ifAzure(azure, servers.USNorthCentral, servers.OpenAI),
@@ -367,12 +382,6 @@ func getEndpoint(ev string, azure bool) string {
 	return v
 }
 
-func skipNowIfThrottled(t *testing.T, err error) {
-	if respErr := (*azcore.ResponseError)(nil); errors.As(err, &respErr) && respErr.StatusCode == http.StatusTooManyRequests {
-		t.Skipf("OpenAI resource overloaded, skipping this test")
-	}
-}
-
 type mimeTypeRecordingPolicy struct{}
 
 // Do changes out the boundary for a multipart message. This makes it simpler to write
@@ -428,12 +437,20 @@ func customRequireNoError(t *testing.T, err error, throttlingAllowed bool) {
 	}
 
 	if throttlingAllowed {
-		if respErr := (*azcore.ResponseError)(nil); errors.As(err, &respErr) && respErr.StatusCode == http.StatusTooManyRequests {
+		var respErr *azcore.ResponseError
+
+		switch {
+		case errors.As(err, &respErr) && respErr.StatusCode == http.StatusTooManyRequests:
 			t.Skip("Skipping test because of throttling (http.StatusTooManyRequests)")
 			return
-		}
-
-		if errors.Is(err, context.DeadlineExceeded) {
+		// If you're using OYD, then the response error (from Azure OpenAI) will be a 400, but the underlying text will mention
+		// that it's 429'd.
+		// 	  "code": 400,
+		// 	  "message": "Server responded with status 429. Error message: {'error': {'code': '429', 'message': 'Rate limit is exceeded. Try again in 1 seconds.'}}"
+		case errors.As(err, &respErr) && respErr.StatusCode == http.StatusBadRequest && strings.Contains(err.Error(), "Rate limit is exceeded"):
+			t.Skip("Skipping test because of throttling in OYD resource")
+			return
+		case errors.Is(err, context.DeadlineExceeded):
 			t.Skip("Skipping test because of throttling (DeadlineExceeded)")
 			return
 		}

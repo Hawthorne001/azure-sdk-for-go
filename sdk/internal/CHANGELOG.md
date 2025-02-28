@@ -1,14 +1,20 @@
 # Release History
 
-## 1.10.1 (Unreleased)
+## 1.11.0 (Unreleased)
 
 ### Features Added
+
+* Added function `tracing.NewSpanValidator` to create a span validator for use with in unit tests.
+* Added type `tracing.SpanMatcher` to match spans in a span validator.
 
 ### Breaking Changes
 
 ### Bugs Fixed
 
 ### Other Changes
+* Zero `RecordingOptions.ProxyPort` is interpreted as indicating the default port used
+  by `StartTestProxy`
+* Improved presentation of test proxy recording mismatch errors
 
 ## 1.10.0 (2024-07-16)
 
